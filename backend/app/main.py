@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from app.api.health import router as health_router
-from app.core.config import get_settings
-from app.core.version import VERSION
+from .api.health import router as health_router
+from .core.config import get_settings
+from .core.version import VERSION
 
 
 def create_app() -> FastAPI:
