@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 
 from app.core.config import Settings, get_settings
@@ -7,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/health")
-def health(settings: Settings = Depends(get_settings)) -> dict:
+def health(settings: Annotated[Settings, Depends(get_settings)]) -> dict:
     return {
         "status": "ok",
         "env": settings.app_env,
