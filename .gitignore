@@ -4,6 +4,9 @@ dist/
 build/
 .next/
 coverage/
+/.npm-cache/
+/.npm-cache-local/
+/.pnpm-store/
 *.log
 npm-debug.log*
 yarn-error.log*
