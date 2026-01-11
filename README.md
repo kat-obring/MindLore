@@ -40,8 +40,9 @@ cd frontend
 npm run dev
 ```
 
-- Backend app (placeholder until main app is added):
-  - After backend code exists, run with uvicorn, e.g., `uvicorn app.main:app --reload` from `backend/`.
+- Backend app (requires `OPENAI_API_KEY` set):
+  - From `backend/`: `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+  - Or use Make target: `make backend-serve` (respects `PORT` env/var)
 
 ## CI
 

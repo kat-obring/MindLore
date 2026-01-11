@@ -2,6 +2,7 @@ PYTHON := python3
 PIP := $(PYTHON) -m pip
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
+PORT ?= 8000
 
 .PHONY: help backend-install backend-lint backend-format backend-test frontend-install frontend-lint frontend-test frontend-build lint test install
 
@@ -12,6 +13,7 @@ help:
 	@echo "  backend-lint       Run ruff lint on backend"
 	@echo "  backend-format     Run black on backend"
 	@echo "  backend-test       Run pytest on backend"
+	@echo "  backend-serve      Run uvicorn dev server for backend"
 	@echo "  frontend-install   Install frontend deps"
 	@echo "  frontend-lint      Run eslint on frontend"
 	@echo "  frontend-test      Run vitest on frontend"
@@ -32,6 +34,9 @@ backend-format:
 
 backend-test:
 	cd $(BACKEND_DIR) && pytest
+
+backend-serve:
+	cd $(BACKEND_DIR) && uvicorn app.main:app --reload --host 0.0.0.0 --port $(PORT)
 
 frontend-install:
 	cd $(FRONTEND_DIR) && npm install
