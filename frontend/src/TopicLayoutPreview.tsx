@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
 
-type Topic = {
+interface Topic {
   id: string;
   title: string;
   detail: string;
   suggestions: string[];
-};
+}
 
 const topics: Topic[] = [
   {
