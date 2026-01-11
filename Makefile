@@ -36,7 +36,7 @@ backend-test:
 	cd $(BACKEND_DIR) && pytest
 
 backend-serve:
-	cd $(BACKEND_DIR) && uvicorn app.main:app --reload --host 0.0.0.0 --port $(PORT)
+	cd $(BACKEND_DIR) && uvicorn app.main:create_app --factory --reload --host 0.0.0.0 --port $(PORT)
 
 frontend-install:
 	cd $(FRONTEND_DIR) && npm install
