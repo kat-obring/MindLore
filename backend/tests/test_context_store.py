@@ -1,5 +1,4 @@
 import pytest
-
 from backend.app.context.store import ContextRecord, ContextStore
 
 
