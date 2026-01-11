@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.core.config import Settings
+from backend.app.core.config import Settings
 
 
 def _clear_env(monkeypatch: pytest.MonkeyPatch) -> None:

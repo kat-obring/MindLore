@@ -2,9 +2,9 @@ import os
 
 from fastapi import FastAPI
 
-from app.core.config import Settings, get_settings
-from app.core.version import VERSION
-from app.main import create_app
+from backend.app.core.config import Settings, get_settings
+from backend.app.core.version import VERSION
+from backend.app.main import create_app
 
 
 def _set_required_env() -> None:

@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from app.core.config import Settings, get_settings
-from app.core.version import VERSION
+from ..core.config import Settings, get_settings
+from ..core.version import VERSION
 
 router = APIRouter()
 

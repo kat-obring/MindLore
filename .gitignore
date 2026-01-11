@@ -30,6 +30,8 @@ htmlcov/
 var/
 plans/
 plan.md
+data/context/*
+!data/context/.gitkeep
 
 # OS/editor noise
 .DS_Store
