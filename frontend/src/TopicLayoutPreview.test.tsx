@@ -239,4 +239,22 @@ describe("TopicLayoutPreview", () => {
     fireEvent.click(topic1Button);
     expect(within(topic1Card).getByText(/Topic 1 detail/i)).toBeInTheDocument();
   });
+
+  it("renders HTML-like topic titles as text (no execution/markup)", () => {
+    const maliciousTitle = '<script>alert("xss")</script>';
+    render(
+      <TopicLayoutPreview
+        topics={[
+          {
+            id: "topic-xss",
+            title: maliciousTitle,
+            detail: "Detail",
+            suggestions: [],
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText(maliciousTitle)).toBeInTheDocument();
+  });
 });
