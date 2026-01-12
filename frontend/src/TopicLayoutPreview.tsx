@@ -87,6 +87,28 @@ const detailPanelStyle = {
   backgroundColor: colors.ivory,
 } as const;
 
+const entryContainerStyle = {
+  display: "flex",
+  gap: spacing.sm,
+  alignItems: "center",
+  marginBottom: spacing.sm,
+} as const;
+
+const entryInputStyle = {
+  flex: 1,
+  padding: spacing.xs,
+  borderRadius: radius.sm,
+  border: `1px solid ${colors.charcoal}`,
+} as const;
+
+const entryButtonStyle = {
+  padding: `${spacing.xs} ${spacing.sm}`,
+  borderRadius: radius.sm,
+  border: `1px solid ${colors.charcoal}`,
+  backgroundColor: colors.champagne,
+  cursor: "pointer",
+} as const;
+
 type TopicLayoutPreviewProps = {
   topics?: Topic[];
 };
@@ -96,8 +118,40 @@ type TopicEntryProps = {
 };
 
 function TopicEntry({ onSubmit }: TopicEntryProps) {
-  void onSubmit;
-  return null;
+  const [value, setValue] = useState("");
+
+  const handleSubmit = () => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return;
+    }
+    onSubmit?.(trimmed);
+    setValue("");
+  };
+
+  return (
+    <div style={entryContainerStyle}>
+      <input
+        aria-label="Topic"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            handleSubmit();
+          }
+        }}
+        style={entryInputStyle}
+      />
+      <button
+        type="button"
+        onClick={handleSubmit}
+        style={entryButtonStyle}
+      >
+        Save
+      </button>
+    </div>
+  );
 }
 
 type TopicListProps = {
@@ -171,18 +225,32 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
   );
 }
 
-function TopicLayoutPreview({ topics = defaultTopics }: TopicLayoutPreviewProps) {
-  if (topics.length === 0) {
+function TopicLayoutPreview({
+  topics: initialTopics = defaultTopics,
+}: TopicLayoutPreviewProps) {
+  const [topicItems, setTopicItems] = useState(initialTopics);
+  const [selectedId, setSelectedId] = useState(initialTopics[0]?.id);
+
+  if (topicItems.length === 0) {
     return null;
   }
 
-  const [selectedId, setSelectedId] = useState(topics[0]?.id);
+  const handleAddTopic = (title: string) => {
+    const newTopic: Topic = {
+      id: `topic-${Date.now()}`,
+      title,
+      detail: "",
+      suggestions: [],
+    };
+    setTopicItems((prev) => [newTopic, ...prev]);
+    setSelectedId(newTopic.id);
+  };
 
   return (
     <>
-      <TopicEntry onSubmit={() => {}} />
+      <TopicEntry onSubmit={handleAddTopic} />
       <TopicList
-        topics={topics}
+        topics={topicItems}
         selectedId={selectedId}
         onSelect={setSelectedId}
       />

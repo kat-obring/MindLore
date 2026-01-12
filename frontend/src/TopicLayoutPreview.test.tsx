@@ -54,4 +54,36 @@ describe("TopicLayoutPreview", () => {
     const { container } = render(<TopicLayoutPreview topics={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  it("shows the topic input above the topics list with a visible Save button", () => {
+    render(<TopicLayoutPreview />);
+
+    const topicInput = screen.getByRole("textbox");
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    const firstTopicButton = screen.getByRole("button", { name: /topic 1/i });
+
+    expect(topicInput).toBeInTheDocument();
+    expect(saveButton).toBeInTheDocument();
+    expect(
+      topicInput.compareDocumentPosition(firstTopicButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("pressing Enter saves a non-empty trimmed topic, clears the input, and prepends it", () => {
+    const { container } = render(<TopicLayoutPreview />);
+
+    const topicInput = screen.getByRole("textbox");
+
+    fireEvent.change(topicInput, { target: { value: "  New Topic  " } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    const updatedCards = container.querySelectorAll(
+      "[data-testid^='topic-card-']",
+    );
+
+    expect(updatedCards.length).toBeGreaterThan(3);
+    expect(updatedCards[0]).toHaveTextContent("New Topic");
+    expect((topicInput as HTMLInputElement).value).toBe("");
+  });
 });
