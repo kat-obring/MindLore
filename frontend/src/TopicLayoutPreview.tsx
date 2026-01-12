@@ -10,32 +10,6 @@ export interface Topic {
 
 const defaultTopics: Topic[] = [];
 
-const detailMinHeight = "120px";
-
-const listStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: spacing.sm,
-} as const;
-
-const cardBaseStyle = {
-  borderRadius: radius.md,
-  padding: spacing.sm,
-  display: "flex",
-  flexDirection: "column",
-  gap: spacing.sm,
-} as const;
-
-const selectedCardStyle = {
-  border: `1px solid ${colors.turquoise}`,
-  backgroundColor: colors.ivory,
-} as const;
-
-const unselectedCardStyle = {
-  border: `1px solid ${colors.charcoal}`,
-  backgroundColor: "transparent",
-} as const;
-
 const topicButtonStyle = {
   textAlign: "left",
   padding: spacing.xs,
@@ -45,27 +19,6 @@ const topicButtonStyle = {
   cursor: "pointer",
   fontWeight: 600,
   color: colors.midnight,
-} as const;
-
-const suggestionsRowStyle = {
-  display: "flex",
-  gap: spacing.sm,
-} as const;
-
-const suggestionButtonStyle = {
-  padding: `${spacing.xs} ${spacing.sm}`,
-  borderRadius: radius.sm,
-  border: `1px solid ${colors.charcoal}`,
-  backgroundColor: colors.champagne,
-  cursor: "pointer",
-} as const;
-
-const detailPanelStyle = {
-  border: `1px dashed ${colors.gunmetal}`,
-  borderRadius: radius.md,
-  minHeight: detailMinHeight,
-  padding: spacing.sm,
-  backgroundColor: colors.ivory,
 } as const;
 
 const entryContainerStyle = {
@@ -97,14 +50,14 @@ const entryButtonStyle = {
   cursor: "pointer",
 } as const;
 
-type TopicLayoutPreviewProps = {
+interface TopicLayoutPreviewProps {
   topics?: Topic[];
-};
+}
 
-type TopicEntryProps = {
+interface TopicEntryProps {
   onSubmit?: (title: string) => boolean;
   validationMessage?: string | null;
-};
+}
 
 function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
   const [value, setValue] = useState("");
@@ -154,11 +107,11 @@ function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
   );
 }
 
-type TopicListProps = {
+interface TopicListProps {
   topics: Topic[];
   selectedId?: string;
   onSelect: (id: string) => void;
-};
+}
 
 function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
   return (
