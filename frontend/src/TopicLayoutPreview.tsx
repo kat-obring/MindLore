@@ -206,6 +206,7 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
                   ))}
                 </div>
                 <div
+                  data-testid={`topic-detail-${topic.id}`}
                   style={{
                     border: `1px dashed ${colors.gunmetal}`,
                     borderRadius: radius.md,
@@ -260,7 +261,7 @@ function TopicLayoutPreview({
       suggestions: [],
     };
     setTopicItems((prev) => [newTopic, ...prev]);
-    setSelectedId(newTopic.id);
+    setSelectedId((prev) => prev);
     setValidationMessage(null);
     return true;
   };

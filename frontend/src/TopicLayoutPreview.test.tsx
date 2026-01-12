@@ -238,6 +238,24 @@ describe("TopicLayoutPreview", () => {
     expect(cards[0]).toHaveTextContent("First Topic");
   });
 
+  it("newly added topics can be toggled open and closed via their title", () => {
+    render(<TopicLayoutPreview topics={[]} />);
+    const topicInput = screen.getByRole("textbox");
+
+    fireEvent.change(topicInput, { target: { value: "Fresh Topic" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    const card = screen.getByTestId(/topic-card-/i);
+    expect(screen.queryByTestId(/topic-detail-/i)).not.toBeInTheDocument();
+
+    const titleButton = within(card).getByRole("button", { name: /fresh topic/i });
+    fireEvent.click(titleButton);
+    expect(screen.getByTestId(/topic-detail-/i)).toBeInTheDocument();
+
+    fireEvent.click(titleButton);
+    expect(screen.queryByTestId(/topic-detail-/i)).not.toBeInTheDocument();
+  });
+
   it("toggles a topic card open when closed and closed when open", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 
