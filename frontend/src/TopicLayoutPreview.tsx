@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
 
-interface Topic {
+export interface Topic {
   id: string;
   title: string;
   detail: string;
   suggestions: string[];
 }
 
-const topics: Topic[] = [
+const defaultTopics: Topic[] = [
   {
     id: "topic-1",
     title: "Topic 1",
@@ -29,9 +29,84 @@ const topics: Topic[] = [
   },
 ];
 
-function TopicLayoutPreview() {
-  const [selectedId, setSelectedId] = useState(topics[0]?.id);
+const detailMinHeight = "120px";
 
+const listStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: spacing.sm,
+} as const;
+
+const cardBaseStyle = {
+  borderRadius: radius.md,
+  padding: spacing.sm,
+  display: "flex",
+  flexDirection: "column",
+  gap: spacing.sm,
+} as const;
+
+const selectedCardStyle = {
+  border: `1px solid ${colors.turquoise}`,
+  backgroundColor: colors.ivory,
+} as const;
+
+const unselectedCardStyle = {
+  border: `1px solid ${colors.charcoal}`,
+  backgroundColor: "transparent",
+} as const;
+
+const topicButtonStyle = {
+  textAlign: "left",
+  padding: spacing.xs,
+  borderRadius: radius.sm,
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+  fontWeight: 600,
+  color: colors.midnight,
+} as const;
+
+const suggestionsRowStyle = {
+  display: "flex",
+  gap: spacing.sm,
+} as const;
+
+const suggestionButtonStyle = {
+  padding: `${spacing.xs} ${spacing.sm}`,
+  borderRadius: radius.sm,
+  border: `1px solid ${colors.charcoal}`,
+  backgroundColor: colors.champagne,
+  cursor: "pointer",
+} as const;
+
+const detailPanelStyle = {
+  border: `1px dashed ${colors.gunmetal}`,
+  borderRadius: radius.md,
+  minHeight: detailMinHeight,
+  padding: spacing.sm,
+  backgroundColor: colors.ivory,
+} as const;
+
+type TopicLayoutPreviewProps = {
+  topics?: Topic[];
+};
+
+type TopicEntryProps = {
+  onSubmit?: (title: string) => void;
+};
+
+function TopicEntry({ onSubmit }: TopicEntryProps) {
+  void onSubmit;
+  return null;
+}
+
+type TopicListProps = {
+  topics: Topic[];
+  selectedId?: string;
+  onSelect: (id: string) => void;
+};
+
+function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
       {topics.map((topic) => {
@@ -51,17 +126,8 @@ function TopicLayoutPreview() {
             }}
           >
             <button
-              onClick={() => setSelectedId(topic.id)}
-              style={{
-                textAlign: "left",
-                padding: spacing.xs,
-                borderRadius: radius.sm,
-                border: "none",
-                background: "transparent",
-                cursor: "pointer",
-                fontWeight: 600,
-                color: colors.midnight,
-              }}
+              onClick={() => onSelect(topic.id)}
+              style={topicButtonStyle}
             >
               {topic.title}
             </button>
@@ -102,6 +168,25 @@ function TopicLayoutPreview() {
         );
       })}
     </div>
+  );
+}
+
+function TopicLayoutPreview({ topics = defaultTopics }: TopicLayoutPreviewProps) {
+  if (topics.length === 0) {
+    return null;
+  }
+
+  const [selectedId, setSelectedId] = useState(topics[0]?.id);
+
+  return (
+    <>
+      <TopicEntry onSubmit={() => {}} />
+      <TopicList
+        topics={topics}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+      />
+    </>
   );
 }
 

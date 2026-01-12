@@ -49,4 +49,9 @@ describe("TopicLayoutPreview", () => {
       within(topic2Card).getByText(/Topic 2 detail/i),
     ).toBeInTheDocument();
   });
+
+  it("renders nothing when no topics are provided", () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+    expect(container).toBeEmptyDOMElement();
+  });
 });
