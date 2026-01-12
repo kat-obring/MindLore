@@ -70,9 +70,16 @@ const detailPanelStyle = {
 
 const entryContainerStyle = {
   display: "flex",
+  flexDirection: "column",
+  gap: spacing.xs,
+  alignItems: "stretch",
+  marginBottom: spacing.sm,
+} as const;
+
+const entryRowStyle = {
+  display: "flex",
   gap: spacing.sm,
   alignItems: "center",
-  marginBottom: spacing.sm,
 } as const;
 
 const entryInputStyle = {
@@ -95,42 +102,54 @@ type TopicLayoutPreviewProps = {
 };
 
 type TopicEntryProps = {
-  onSubmit?: (title: string) => void;
+  onSubmit?: (title: string) => boolean;
+  validationMessage?: string | null;
 };
 
-function TopicEntry({ onSubmit }: TopicEntryProps) {
+function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
   const [value, setValue] = useState("");
 
   const handleSubmit = () => {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return;
+    const didSubmit = onSubmit?.(value) ?? false;
+    if (didSubmit) {
+      setValue("");
     }
-    onSubmit?.(trimmed);
-    setValue("");
   };
 
   return (
     <div style={entryContainerStyle}>
-      <input
-        aria-label="Topic"
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            handleSubmit();
-          }
-        }}
-        style={entryInputStyle}
-      />
-      <button
-        type="button"
-        onClick={handleSubmit}
-        style={entryButtonStyle}
-      >
-        Save
-      </button>
+      <div style={entryRowStyle}>
+        <input
+          aria-label="Topic"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleSubmit();
+            }
+          }}
+          style={{
+            ...entryInputStyle,
+            ...(validationMessage
+              ? {
+                  border: `1px solid ${colors.copper}`,
+                  outlineColor: colors.copper,
+                }
+              : {}),
+          }}
+        />
+        <button
+          type="button"
+          onClick={handleSubmit}
+          style={entryButtonStyle}
+        >
+          Save
+        </button>
+      </div>
+      {validationMessage && (
+        <p style={{ margin: 0, color: colors.copper }}>{validationMessage}</p>
+      )}
     </div>
   );
 }
@@ -211,10 +230,17 @@ function TopicLayoutPreview({
 }: TopicLayoutPreviewProps) {
   const [topicItems, setTopicItems] = useState(initialTopics);
   const [selectedId, setSelectedId] = useState(initialTopics[0]?.id);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const hasTopics = topicItems.length > 0;
 
   const handleAddTopic = (title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setValidationMessage("Topic can not be blank");
+      return false;
+    }
+
     const newTopic: Topic = {
       id: `topic-${Date.now()}`,
       title,
@@ -223,11 +249,16 @@ function TopicLayoutPreview({
     };
     setTopicItems((prev) => [newTopic, ...prev]);
     setSelectedId(newTopic.id);
+    setValidationMessage(null);
+    return true;
   };
 
   return (
     <>
-      <TopicEntry onSubmit={handleAddTopic} />
+      <TopicEntry
+        onSubmit={handleAddTopic}
+        validationMessage={validationMessage}
+      />
       {hasTopics ? (
         <TopicList
           topics={topicItems}

@@ -130,6 +130,38 @@ describe("TopicLayoutPreview", () => {
     expect((topicInput as HTMLInputElement).value).toBe("");
   });
 
+  it('shows "Topic can not be blank" for empty/whitespace submits, blocks save, and clears after success', () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+
+    const topicInput = screen.getByRole("textbox");
+
+    fireEvent.change(topicInput, { target: { value: "   " } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.getByText(/Topic can not be blank/i),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(0);
+
+    fireEvent.change(topicInput, { target: { value: "Valid Topic" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.queryByText(/Topic can not be blank/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/No saved topics/i),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(1);
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']")[0],
+    ).toHaveTextContent("Valid Topic");
+  });
+
   it("toggles a topic card open when closed and closed when open", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 
