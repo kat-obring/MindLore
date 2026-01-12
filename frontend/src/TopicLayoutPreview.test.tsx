@@ -86,4 +86,22 @@ describe("TopicLayoutPreview", () => {
     expect(updatedCards[0]).toHaveTextContent("New Topic");
     expect((topicInput as HTMLInputElement).value).toBe("");
   });
+
+  it("clicking Save performs the same save/clear/prepend behavior", () => {
+    const { container } = render(<TopicLayoutPreview />);
+
+    const topicInput = screen.getByRole("textbox");
+    const saveButton = screen.getByRole("button", { name: /save/i });
+
+    fireEvent.change(topicInput, { target: { value: "  Save Click Topic  " } });
+    fireEvent.click(saveButton);
+
+    const updatedCards = container.querySelectorAll(
+      "[data-testid^='topic-card-']",
+    );
+
+    expect(updatedCards.length).toBeGreaterThan(3);
+    expect(updatedCards[0]).toHaveTextContent("Save Click Topic");
+    expect((topicInput as HTMLInputElement).value).toBe("");
+  });
 });
