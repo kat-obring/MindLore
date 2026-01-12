@@ -192,6 +192,37 @@ describe("TopicLayoutPreview", () => {
     ).toHaveTextContent("Short enough");
   });
 
+  it("blocks duplicate topics (case-insensitive, trimmed) with a duplicate message, clears after success", () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+    const topicInput = screen.getByRole("textbox");
+
+    fireEvent.change(topicInput, { target: { value: "First Topic" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    fireEvent.change(topicInput, { target: { value: "  first topic  " } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.getByText(/topic already exists/i),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(1);
+
+    fireEvent.change(topicInput, { target: { value: "Second Topic" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.queryByText(/topic already exists/i),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(2);
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']")[0],
+    ).toHaveTextContent("Second Topic");
+  });
+
   it("toggles a topic card open when closed and closed when open", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 

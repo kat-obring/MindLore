@@ -244,6 +244,14 @@ function TopicLayoutPreview({
       setValidationMessage("Topic must be 120 characters or fewer");
       return false;
     }
+    const normalized = trimmed.toLowerCase();
+    const hasDuplicate = topicItems.some(
+      (topic) => topic.title.trim().toLowerCase() === normalized,
+    );
+    if (hasDuplicate) {
+      setValidationMessage("Topic already exists");
+      return false;
+    }
 
     const newTopic: Topic = {
       id: `topic-${Date.now()}`,
