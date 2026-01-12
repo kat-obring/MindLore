@@ -162,6 +162,36 @@ describe("TopicLayoutPreview", () => {
     ).toHaveTextContent("Valid Topic");
   });
 
+  it("blocks submissions over 120 characters with a max-length message, clears after success", () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+
+    const longText = "a".repeat(121);
+    const topicInput = screen.getByRole("textbox");
+
+    fireEvent.change(topicInput, { target: { value: longText } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.getByText(/must be 120 characters or fewer/i),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(0);
+
+    fireEvent.change(topicInput, { target: { value: "Short enough" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(
+      screen.queryByText(/must be 120 characters or fewer/i),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']").length,
+    ).toBe(1);
+    expect(
+      container.querySelectorAll("[data-testid^='topic-card-']")[0],
+    ).toHaveTextContent("Short enough");
+  });
+
   it("toggles a topic card open when closed and closed when open", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 

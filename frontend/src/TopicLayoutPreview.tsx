@@ -240,10 +240,14 @@ function TopicLayoutPreview({
       setValidationMessage("Topic can not be blank");
       return false;
     }
+    if (trimmed.length > 120) {
+      setValidationMessage("Topic must be 120 characters or fewer");
+      return false;
+    }
 
     const newTopic: Topic = {
       id: `topic-${Date.now()}`,
-      title,
+      title: trimmed,
       detail: "",
       suggestions: [],
     };
