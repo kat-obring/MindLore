@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import TopicLayoutPreview from "./TopicLayoutPreview";
+import { describe, expect, it } from "vitest";
 
 describe("TopicLayoutPreview", () => {
   it("shows a list of topics and updates selection", () => {
