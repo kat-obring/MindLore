@@ -25,7 +25,7 @@ class ContextStore:
         self.root = Path(root)
 
     def list_contexts(self) -> list[ContextRecord]:
-        self.root.mkdir(parents=True, exist_ok=True)
+        self._ensure_root()
 
         records: list[ContextRecord] = []
         for path in sorted(self.root.iterdir()):
@@ -39,13 +39,16 @@ class ContextStore:
         return records
 
     def save_context(self, slug: str, content: str) -> ContextRecord:
-        self.root.mkdir(parents=True, exist_ok=True)
+        self._ensure_root()
 
         safe_slug = self._validate_slug(slug)
         path = self.root / f"{safe_slug}.md"
         path.write_text(content, encoding="utf-8")
 
         return ContextRecord(slug=safe_slug, content=content)
+
+    def _ensure_root(self) -> None:
+        self.root.mkdir(parents=True, exist_ok=True)
 
     def _validate_slug(self, slug: str) -> str:
         if not slug or not SLUG_PATTERN.fullmatch(slug):
