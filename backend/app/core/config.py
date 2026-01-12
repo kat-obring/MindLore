@@ -29,8 +29,12 @@ class Settings(BaseModel):
 
         return values
 
+    @classmethod
+    def from_env(cls) -> "Settings":
+        load_dotenv()
+        return cls()
+
 
 @lru_cache
 def get_settings() -> Settings:
-    load_dotenv()
-    return Settings()
+    return Settings.from_env()

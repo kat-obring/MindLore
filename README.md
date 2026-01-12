@@ -31,6 +31,12 @@ make lint   # ruff + black --check (backend), eslint (frontend)
 make test   # pytest (backend), vitest (frontend)
 ```
 
+Run tests separately:
+
+- Backend: `make backend-test` (or `cd backend && pytest`)
+- Frontend: `make frontend-test` (or `cd frontend && npm test -- --run`)
+- All tests: `make test`
+
 ## Run Locally
 
 - Frontend dev server:
