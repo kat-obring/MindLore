@@ -29,6 +29,8 @@ const topics: Topic[] = [
   },
 ];
 
+const detailMinHeight = "120px";
+
 const listStyle = {
   display: "flex",
   flexDirection: "column",
@@ -80,7 +82,7 @@ const suggestionButtonStyle = {
 const detailPanelStyle = {
   border: `1px dashed ${colors.gunmetal}`,
   borderRadius: radius.md,
-  minHeight: "120px",
+  minHeight: detailMinHeight,
   padding: spacing.sm,
   backgroundColor: colors.ivory,
 } as const;
