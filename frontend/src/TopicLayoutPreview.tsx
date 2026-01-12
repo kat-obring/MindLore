@@ -8,7 +8,7 @@ interface Topic {
   suggestions: string[];
 }
 
-const topics: Topic[] = [
+const defaultTopics: Topic[] = [
   {
     id: "topic-1",
     title: "Topic 1",
@@ -87,7 +87,15 @@ const detailPanelStyle = {
   backgroundColor: colors.ivory,
 } as const;
 
-function TopicLayoutPreview() {
+type TopicLayoutPreviewProps = {
+  topics?: Topic[];
+};
+
+function TopicLayoutPreview({ topics = defaultTopics }: TopicLayoutPreviewProps) {
+  if (topics.length === 0) {
+    return null;
+  }
+
   const [selectedId, setSelectedId] = useState(topics[0]?.id);
 
   return (

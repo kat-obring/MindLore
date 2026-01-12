@@ -1,7 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
-import TopicLayoutPreview from "./TopicLayoutPreview";
 import { describe, expect, it } from "vitest";
+
+import TopicLayoutPreview from "./TopicLayoutPreview";
 
 describe("TopicLayoutPreview", () => {
   it("shows a list of topics and updates selection", () => {
@@ -48,5 +49,10 @@ describe("TopicLayoutPreview", () => {
     expect(
       within(topic2Card).getByText(/Topic 2 detail/i),
     ).toBeInTheDocument();
+  });
+
+  it("renders nothing when no topics are provided", () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
