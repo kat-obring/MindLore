@@ -1,37 +1,119 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
 
-interface Topic {
+export interface Topic {
   id: string;
   title: string;
   detail: string;
   suggestions: string[];
 }
 
-const topics: Topic[] = [
-  {
-    id: "topic-1",
-    title: "Topic 1",
-    detail: "Topic 1 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-  {
-    id: "topic-2",
-    title: "Topic 2",
-    detail: "Topic 2 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-  {
-    id: "topic-3",
-    title: "Topic 3",
-    detail: "Topic 3 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-];
+const defaultTopics: Topic[] = [];
 
-function TopicLayoutPreview() {
-  const [selectedId, setSelectedId] = useState(topics[0]?.id);
+const topicButtonStyle = {
+  textAlign: "left",
+  padding: spacing.xs,
+  borderRadius: radius.sm,
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+  fontWeight: 600,
+  color: colors.midnight,
+} as const;
 
+const entryContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: spacing.xs,
+  alignItems: "stretch",
+  marginBottom: spacing.sm,
+} as const;
+
+const entryRowStyle = {
+  display: "flex",
+  gap: spacing.sm,
+  alignItems: "center",
+} as const;
+
+const entryInputStyle = {
+  flex: 1,
+  padding: spacing.xs,
+  borderRadius: radius.sm,
+  border: `1px solid ${colors.charcoal}`,
+} as const;
+
+const entryButtonStyle = {
+  padding: `${spacing.xs} ${spacing.sm}`,
+  borderRadius: radius.sm,
+  border: `1px solid ${colors.charcoal}`,
+  backgroundColor: colors.champagne,
+  cursor: "pointer",
+} as const;
+
+interface TopicLayoutPreviewProps {
+  topics?: Topic[];
+}
+
+interface TopicEntryProps {
+  onSubmit?: (title: string) => boolean;
+  validationMessage?: string | null;
+}
+
+function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
+  const [value, setValue] = useState("");
+
+  const handleSubmit = () => {
+    const didSubmit = onSubmit?.(value) ?? false;
+    if (didSubmit) {
+      setValue("");
+    }
+  };
+
+  return (
+    <div style={entryContainerStyle}>
+      <div style={entryRowStyle}>
+        <input
+          aria-label="Topic"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleSubmit();
+            }
+          }}
+          style={{
+            ...entryInputStyle,
+            ...(validationMessage
+              ? {
+                  border: `1px solid ${colors.copper}`,
+                  outlineColor: colors.copper,
+                }
+              : {}),
+          }}
+        />
+        <button
+          type="button"
+          onClick={handleSubmit}
+          style={entryButtonStyle}
+        >
+          Save
+        </button>
+      </div>
+      {validationMessage && (
+        <p style={{ margin: 0, color: colors.copper }}>{validationMessage}</p>
+      )}
+    </div>
+  );
+}
+
+interface TopicListProps {
+  topics: Topic[];
+  selectedId?: string;
+  onSelect: (id: string) => void;
+}
+
+function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
       {topics.map((topic) => {
@@ -51,17 +133,8 @@ function TopicLayoutPreview() {
             }}
           >
             <button
-              onClick={() => setSelectedId(topic.id)}
-              style={{
-                textAlign: "left",
-                padding: spacing.xs,
-                borderRadius: radius.sm,
-                border: "none",
-                background: "transparent",
-                cursor: "pointer",
-                fontWeight: 600,
-                color: colors.midnight,
-              }}
+              onClick={() => onSelect(topic.id === selectedId ? undefined : topic.id)}
+              style={topicButtonStyle}
             >
               {topic.title}
             </button>
@@ -86,6 +159,7 @@ function TopicLayoutPreview() {
                   ))}
                 </div>
                 <div
+                  data-testid={`topic-detail-${topic.id}`}
                   style={{
                     border: `1px dashed ${colors.gunmetal}`,
                     borderRadius: radius.md,
@@ -102,6 +176,65 @@ function TopicLayoutPreview() {
         );
       })}
     </div>
+  );
+}
+
+function TopicLayoutPreview({
+  topics: initialTopics = defaultTopics,
+}: TopicLayoutPreviewProps) {
+  const [topicItems, setTopicItems] = useState(initialTopics);
+  const [selectedId, setSelectedId] = useState(initialTopics[0]?.id);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+
+  const hasTopics = topicItems.length > 0;
+
+  const handleAddTopic = (title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setValidationMessage("Topic can not be blank");
+      return false;
+    }
+    if (trimmed.length > 120) {
+      setValidationMessage("Topic must be 120 characters or fewer");
+      return false;
+    }
+    const normalized = trimmed.toLowerCase();
+    const hasDuplicate = topicItems.some(
+      (topic) => topic.title.trim().toLowerCase() === normalized,
+    );
+    if (hasDuplicate) {
+      setValidationMessage("Topic already exists");
+      return false;
+    }
+
+    const newTopic: Topic = {
+      id: `topic-${Date.now()}`,
+      title: trimmed,
+      detail: "",
+      suggestions: [],
+    };
+    setTopicItems((prev) => [newTopic, ...prev]);
+    setSelectedId((prev) => prev);
+    setValidationMessage(null);
+    return true;
+  };
+
+  return (
+    <>
+      <TopicEntry
+        onSubmit={handleAddTopic}
+        validationMessage={validationMessage}
+      />
+      {hasTopics ? (
+        <TopicList
+          topics={topicItems}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+      ) : (
+        <p>No saved topics</p>
+      )}
+    </>
   );
 }
 
