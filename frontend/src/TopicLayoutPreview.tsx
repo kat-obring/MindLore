@@ -8,26 +8,7 @@ export interface Topic {
   suggestions: string[];
 }
 
-const defaultTopics: Topic[] = [
-  {
-    id: "topic-1",
-    title: "Topic 1",
-    detail: "Topic 1 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-  {
-    id: "topic-2",
-    title: "Topic 2",
-    detail: "Topic 2 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-  {
-    id: "topic-3",
-    title: "Topic 3",
-    detail: "Topic 3 detail",
-    suggestions: ["Suggestion 1", "Suggestion 2", "Suggestion 3"],
-  },
-];
+const defaultTopics: Topic[] = [];
 
 const detailMinHeight = "120px";
 
@@ -231,9 +212,7 @@ function TopicLayoutPreview({
   const [topicItems, setTopicItems] = useState(initialTopics);
   const [selectedId, setSelectedId] = useState(initialTopics[0]?.id);
 
-  if (topicItems.length === 0) {
-    return null;
-  }
+  const hasTopics = topicItems.length > 0;
 
   const handleAddTopic = (title: string) => {
     const newTopic: Topic = {
@@ -249,11 +228,15 @@ function TopicLayoutPreview({
   return (
     <>
       <TopicEntry onSubmit={handleAddTopic} />
-      <TopicList
-        topics={topicItems}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-      />
+      {hasTopics ? (
+        <TopicList
+          topics={topicItems}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+      ) : (
+        <p>No saved topics</p>
+      )}
     </>
   );
 }
