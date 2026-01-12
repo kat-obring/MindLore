@@ -223,6 +223,21 @@ describe("TopicLayoutPreview", () => {
     ).toHaveTextContent("Second Topic");
   });
 
+  it("removes the empty state after adding a topic", () => {
+    const { container } = render(<TopicLayoutPreview topics={[]} />);
+    const topicInput = screen.getByRole("textbox");
+
+    expect(screen.getByText(/No saved topics/i)).toBeInTheDocument();
+
+    fireEvent.change(topicInput, { target: { value: "First Topic" } });
+    fireEvent.keyDown(topicInput, { key: "Enter", code: "Enter" });
+
+    expect(screen.queryByText(/No saved topics/i)).not.toBeInTheDocument();
+    const cards = container.querySelectorAll("[data-testid^='topic-card-']");
+    expect(cards.length).toBe(1);
+    expect(cards[0]).toHaveTextContent("First Topic");
+  });
+
   it("toggles a topic card open when closed and closed when open", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 
