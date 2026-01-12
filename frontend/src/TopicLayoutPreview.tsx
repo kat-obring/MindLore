@@ -161,7 +161,7 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
             }}
           >
             <button
-              onClick={() => onSelect(topic.id)}
+              onClick={() => onSelect(topic.id === selectedId ? undefined : topic.id)}
               style={topicButtonStyle}
             >
               {topic.title}

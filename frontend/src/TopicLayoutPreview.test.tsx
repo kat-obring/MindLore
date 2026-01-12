@@ -129,4 +129,21 @@ describe("TopicLayoutPreview", () => {
     expect(updatedCards[0]).toHaveTextContent("Save Click Topic");
     expect((topicInput as HTMLInputElement).value).toBe("");
   });
+
+  it("toggles a topic card open when closed and closed when open", () => {
+    render(<TopicLayoutPreview topics={sampleTopics} />);
+
+    const topic1Button = screen.getByRole("button", { name: /topic 1/i });
+    const topic1Card = screen.getByTestId("topic-card-topic-1");
+
+    expect(within(topic1Card).getByText(/Topic 1 detail/i)).toBeInTheDocument();
+
+    fireEvent.click(topic1Button);
+    expect(
+      within(topic1Card).queryByText(/Topic 1 detail/i),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(topic1Button);
+    expect(within(topic1Card).getByText(/Topic 1 detail/i)).toBeInTheDocument();
+  });
 });
