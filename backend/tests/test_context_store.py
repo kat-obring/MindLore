@@ -54,3 +54,23 @@ def test_save_context_rejects_invalid_slug(slug, tmp_path) -> None:
 
     with pytest.raises(ValueError):
         store.save_context(slug, "content")
+
+
+def test_list_contexts_handles_concurrent_deletion(tmp_path, monkeypatch) -> None:
+    (tmp_path / "topic-a.md").write_text("hello", encoding="utf-8")
+    store = ContextStore(root=tmp_path)
+
+    # Mock Path.read_text to raise FileNotFoundError for topic-a.md
+    from pathlib import Path
+
+    original_read_text = Path.read_text
+
+    def mock_read_text(self, *args, **kwargs):
+        if self.stem == "topic-a":
+            raise FileNotFoundError("Simulated deletion")
+        return original_read_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", mock_read_text)
+
+    # Should not raise FileNotFoundError and should skip the missing file
+    assert store.list_contexts() == []
