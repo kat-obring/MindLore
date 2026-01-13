@@ -1,3 +1,4 @@
+from pathlib import Path
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -8,6 +9,7 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     openai_model: str = "gpt-5.2"
     port: int = 8000
+    context_dir: Path = Path("data/context")
     openai_api_key: str
 
     # This config tells Pydantic exactly where to find your file

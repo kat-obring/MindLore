@@ -210,7 +210,7 @@ function TopicLayoutPreview({
     }
 
     const newTopic: Topic = {
-      id: `topic-${Date.now()}`,
+      id: crypto.randomUUID(),
       title: trimmed,
       detail: "",
       suggestions: [],
