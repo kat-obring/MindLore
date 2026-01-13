@@ -3,7 +3,17 @@ from fastapi import FastAPI
 from .api.health import router as health_router
 from .core.config import get_settings
 from .core.version import VERSION
+from .prompts.repository import FilePromptRepository
+from .suggestions.service import SuggestionService, FakeLLMClient
 
+def get_prompt_repository() -> FilePromptRepository:
+    return FilePromptRepository()
+
+def get_llm_client() -> FakeLLMClient:
+    return FakeLLMClient()
+
+def get_suggestion_service() -> SuggestionService:
+    return SuggestionService(get_prompt_repository(), get_llm_client())
 
 def create_app() -> FastAPI:
     settings = get_settings()

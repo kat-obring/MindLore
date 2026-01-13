@@ -1,0 +1,5 @@
+# Project Rules
+
+- **Python Virtual Environment**: Always use the virtual environment located at `backend/.venv/bin/python` or `backend/.venv/bin/pytest` for all backend commands.
+- **TDD/Tidy First**: Follow the instructions in `plan.md` and `plans/milestone-6.md` precisely. Always follow the TDD cycle: Red -> Green -> Refactor.
+- **Separation of Concerns**: Never mix structural (Tidy First) and behavioral changes in the same commit or step.
