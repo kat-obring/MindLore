@@ -6,6 +6,7 @@ export interface Topic {
   title: string;
   detail: string;
   suggestions: string[];
+  selectedSuggestionIndex?: number;
 }
 
 const defaultTopics: Topic[] = [];
@@ -111,9 +112,19 @@ interface TopicListProps {
   topics: Topic[];
   selectedId?: string;
   onSelect: (id: string | undefined) => void;
+  onGenerateSuggestions: (id: string) => void;
+  onSelectSuggestion: (topicId: string, index: number) => void;
+  isGenerating?: string | null;
 }
 
-function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
+function TopicList({
+  topics,
+  selectedId,
+  onSelect,
+  onGenerateSuggestions,
+  onSelectSuggestion,
+  isGenerating,
+}: TopicListProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
       {topics.map((topic) => {
@@ -133,7 +144,9 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
             }}
           >
             <button
-              onClick={() => onSelect(topic.id === selectedId ? undefined : topic.id)}
+              onClick={() =>
+                onSelect(topic.id === selectedId ? undefined : topic.id)
+              }
               style={topicButtonStyle}
             >
               {topic.title}
@@ -141,23 +154,50 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
 
             {isSelected && (
               <>
-                <div style={{ display: "flex", gap: spacing.sm }}>
-                  {topic.suggestions.map((suggestion, index) => (
-                    <button
-                      key={suggestion}
-                      type="button"
-                      style={{
-                        padding: `${spacing.xs} ${spacing.sm}`,
-                        borderRadius: radius.sm,
-                        border: `1px solid ${colors.charcoal}`,
-                        backgroundColor: colors.champagne,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {`Suggestion ${index + 1}`}
-                    </button>
-                  ))}
-                </div>
+                {topic.suggestions.length === 0 ? (
+                  <button
+                    type="button"
+                    disabled={isGenerating === topic.id}
+                    onClick={() => onGenerateSuggestions(topic.id)}
+                    style={{
+                      ...entryButtonStyle,
+                      alignSelf: "flex-start",
+                      opacity: isGenerating === topic.id ? 0.5 : 1,
+                    }}
+                  >
+                    {isGenerating === topic.id
+                      ? "Generating..."
+                      : "Generate Suggestions"}
+                  </button>
+                ) : (
+                  <div style={{ display: "flex", gap: spacing.sm, flexWrap: "wrap" }}>
+                    {topic.suggestions.map((suggestion, index) => {
+                      const isSuggestionSelected =
+                        topic.selectedSuggestionIndex === index;
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => onSelectSuggestion(topic.id, index)}
+                          style={{
+                            padding: `${spacing.xs} ${spacing.sm}`,
+                            borderRadius: radius.sm,
+                            border: `1px solid ${isSuggestionSelected ? colors.turquoise : colors.charcoal}`,
+                            backgroundColor: isSuggestionSelected
+                              ? colors.turquoise
+                              : colors.champagne,
+                            color: isSuggestionSelected ? "white" : "inherit",
+                            cursor: "pointer",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          {/* Use the first line as the button name, or just Outline A/B/C */}
+                          {suggestion.split("\n")[0] || `Suggestion ${index + 1}`}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 <div
                   data-testid={`topic-detail-${topic.id}`}
                   style={{
@@ -166,9 +206,12 @@ function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
                     minHeight: "120px",
                     padding: spacing.sm,
                     backgroundColor: colors.ivory,
+                    whiteSpace: "pre-wrap",
                   }}
                 >
-                  {topic.detail}
+                  {topic.selectedSuggestionIndex !== undefined
+                    ? topic.suggestions[topic.selectedSuggestionIndex]
+                    : topic.detail}
                 </div>
               </>
             )}
@@ -183,12 +226,49 @@ function TopicLayoutPreview({
   topics: initialTopics = defaultTopics,
 }: TopicLayoutPreviewProps) {
   const [topicItems, setTopicItems] = useState(initialTopics);
-  const [selectedId, setSelectedId] = useState<string | undefined>(
-    initialTopics[0]?.id,
-  );
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
 
   const hasTopics = topicItems.length > 0;
+
+  const handleGenerateSuggestions = async (id: string) => {
+    const topic = topicItems.find((t) => t.id === id);
+    if (!topic) return;
+
+    setIsGenerating(id);
+    try {
+      const response = await fetch("/api/suggestions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: topic.title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate suggestions");
+      }
+
+      const data = await response.json();
+      setTopicItems((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, suggestions: data.suggestions } : t,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
+      // For now, we just log the error. In a real app, we'd show a UI message.
+    } finally {
+      setIsGenerating(null);
+    }
+  };
+
+  const handleSelectSuggestion = (topicId: string, index: number) => {
+    setTopicItems((prev) =>
+      prev.map((t) =>
+        t.id === topicId ? { ...t, selectedSuggestionIndex: index } : t,
+      ),
+    );
+  };
 
   const handleAddTopic = (title: string) => {
     const trimmed = title.trim();
@@ -232,6 +312,9 @@ function TopicLayoutPreview({
           topics={topicItems}
           selectedId={selectedId}
           onSelect={setSelectedId}
+          onGenerateSuggestions={handleGenerateSuggestions}
+          onSelectSuggestion={handleSelectSuggestion}
+          isGenerating={isGenerating}
         />
       ) : (
         <p>No saved topics</p>

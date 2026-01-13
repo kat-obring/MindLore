@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import TopicLayoutPreview, { type Topic } from "./TopicLayoutPreview";
 
@@ -37,6 +37,7 @@ describe("TopicLayoutPreview", () => {
     expect(topic2).toBeInTheDocument();
     expect(topic3).toBeInTheDocument();
 
+    fireEvent.click(topic1);
     expect(screen.getByText(/Topic 1 detail/i)).toBeInTheDocument();
 
     fireEvent.click(topic2);
@@ -45,6 +46,8 @@ describe("TopicLayoutPreview", () => {
 
   it("renders three suggestion tabs for the selected topic", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /topic 1/i }));
 
     expect(
       screen.getByRole("button", { name: /suggestion 1/i }),
@@ -60,6 +63,7 @@ describe("TopicLayoutPreview", () => {
   it("renders details inside the selected topic card, stacked vertically", () => {
     render(<TopicLayoutPreview topics={sampleTopics} />);
 
+    fireEvent.click(screen.getByRole("button", { name: /topic 1/i }));
     const topic1Card = screen.getByTestId("topic-card-topic-1");
     expect(
       within(topic1Card).getByText(/Topic 1 detail/i),
@@ -262,6 +266,7 @@ describe("TopicLayoutPreview", () => {
     const topic1Button = screen.getByRole("button", { name: /topic 1/i });
     const topic1Card = screen.getByTestId("topic-card-topic-1");
 
+    fireEvent.click(topic1Button);
     expect(within(topic1Card).getByText(/Topic 1 detail/i)).toBeInTheDocument();
 
     fireEvent.click(topic1Button);
@@ -289,5 +294,52 @@ describe("TopicLayoutPreview", () => {
     );
 
     expect(screen.getByText(maliciousTitle)).toBeInTheDocument();
+  });
+
+  it("shows a 'Generate Suggestions' button and updates suggestions on click", async () => {
+    const mockSuggestions = [
+      "### Outline A: Angle 1",
+      "### Outline B: Angle 2",
+      "### Outline C: Angle 3",
+    ];
+    const fetchSpy = vi.spyOn(window, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ suggestions: mockSuggestions }),
+    } as Response);
+
+    render(
+      <TopicLayoutPreview
+        topics={[{ id: "1", title: "Test Topic", detail: "", suggestions: [] }]}
+      />,
+    );
+
+    // Open the topic
+    fireEvent.click(screen.getByRole("button", { name: /test topic/i }));
+
+    const generateBtn = screen.getByRole("button", {
+      name: /generate suggestions/i,
+    });
+    fireEvent.click(generateBtn);
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/suggestions",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ topic: "Test Topic" }),
+      }),
+    );
+
+    // Check that suggestions are rendered
+    expect(
+      await screen.findByRole("button", { name: /outline a: angle 1/i }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /outline b: angle 2/i }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /outline c: angle 3/i }),
+    ).toBeInTheDocument();
+
+    fetchSpy.mockRestore();
   });
 });
