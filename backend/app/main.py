@@ -5,9 +5,12 @@ from .core.config import get_settings
 from .core.version import VERSION
 from .prompts.repository import FilePromptRepository
 from .suggestions.service import SuggestionService, FakeLLMClient
+import os
 
 def get_prompt_repository() -> FilePromptRepository:
-    return FilePromptRepository()
+    # Default to prompts directory relative to project root
+    prompts_dir = os.getenv("PROMPTS_DIR", "../prompts")
+    return FilePromptRepository(prompts_dir=prompts_dir)
 
 def get_llm_client() -> FakeLLMClient:
     return FakeLLMClient()
