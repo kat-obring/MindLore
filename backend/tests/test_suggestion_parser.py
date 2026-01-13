@@ -1,5 +1,5 @@
 import pytest
-from app.suggestions.service import parse_suggestions
+from backend.app.suggestions.service import parse_suggestions
 
 def test_parse_suggestions_extracts_exactly_three_outlines():
     # Given a sample LLM response with 3 outlines

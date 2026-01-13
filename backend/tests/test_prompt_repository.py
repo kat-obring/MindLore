@@ -1,6 +1,6 @@
 import pytest
 import os
-from app.prompts.repository import FilePromptRepository
+from backend.app.prompts.repository import FilePromptRepository
 
 def test_file_prompt_repository_loads_topics_first():
     # Given a repository pointing to the prompts directory

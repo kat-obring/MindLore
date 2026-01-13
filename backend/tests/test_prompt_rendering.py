@@ -1,4 +1,4 @@
-from app.prompts.repository import render_prompt
+from backend.app.prompts.repository import render_prompt
 
 def test_render_prompt_includes_topic_and_content():
     # Given
