@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Protocol
 
+TOPIC_SEPARATOR = "\n\nTopic:\n"
+
 class PromptRepository(Protocol):
     def get_prompt(self, name: str) -> str:
         """Load prompt text by name."""
@@ -16,4 +18,4 @@ class FilePromptRepository:
 
 def render_prompt(prompt_template: str, topic: str) -> str:
     """Combine the prompt template with the topic."""
-    return f"{prompt_template}\n\nTopic:\n{topic}\n"
+    return f"{prompt_template}{TOPIC_SEPARATOR}{topic}\n"

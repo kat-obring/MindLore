@@ -7,7 +7,11 @@ class LLMClient(Protocol):
         ...
 
 class FakeLLMClient:
+    def __init__(self):
+        self.last_prompt = None
+
     def generate(self, prompt: str) -> str:
+        self.last_prompt = prompt
         return ""
 
 class SuggestionService:
