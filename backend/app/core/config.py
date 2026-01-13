@@ -13,10 +13,9 @@ class Settings(BaseSettings):
     # This config tells Pydantic exactly where to find your file
     # and to ignore extra variables like OPEN_AI_KEY if they exist
     model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
+
 
 @lru_cache
 def get_settings() -> Settings:
