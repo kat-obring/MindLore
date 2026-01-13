@@ -1,5 +1,5 @@
 from typing import Protocol, List
-from app.prompts.repository import PromptRepository
+from app.prompts.repository import PromptRepository, render_prompt
 
 class LLMClient(Protocol):
     def generate(self, prompt: str) -> str:
@@ -15,10 +15,13 @@ class FakeLLMClient:
         return ""
 
 class SuggestionService:
-    def __init__(self, prompt_repo: "PromptRepository", llm_client: LLMClient):
+    def __init__(self, prompt_repo: PromptRepository, llm_client: LLMClient):
         self.prompt_repo = prompt_repo
         self.llm_client = llm_client
 
     def get_suggestions(self, topic: str) -> List[str]:
         """Get 3 suggestions for a topic."""
+        prompt_template = self.prompt_repo.get_prompt("topics_first")
+        final_prompt = render_prompt(prompt_template, topic)
+        self.llm_client.generate(final_prompt)
         return []
