@@ -55,6 +55,7 @@ interface TopicLayoutPreviewProps {
   topics?: Topic[];
 }
 
+<<<<<<< Updated upstream
 interface TopicEntryProps {
   onSubmit?: (title: string) => boolean;
   validationMessage?: string | null;
@@ -69,7 +70,24 @@ function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
       setValue("");
     }
   };
+=======
+type TopicEntryProps = {
+  onSubmit?: (title: string) => void;
+};
 
+function TopicEntry({ onSubmit }: TopicEntryProps) {
+  void onSubmit;
+  return null;
+}
+>>>>>>> Stashed changes
+
+type TopicListProps = {
+  topics: Topic[];
+  selectedId?: string;
+  onSelect: (id: string) => void;
+};
+
+function TopicList({ topics, selectedId, onSelect }: TopicListProps) {
   return (
     <div style={entryContainerStyle}>
       <div style={entryRowStyle}>
@@ -146,9 +164,13 @@ function TopicList({
             }}
           >
             <button
+<<<<<<< Updated upstream
               onClick={() =>
                 onSelect(topic.id === selectedId ? undefined : topic.id)
               }
+=======
+              onClick={() => onSelect(topic.id)}
+>>>>>>> Stashed changes
               style={topicButtonStyle}
             >
               {topic.title}
@@ -231,6 +253,7 @@ function TopicList({
   );
 }
 
+<<<<<<< Updated upstream
 function TopicLayoutPreview({
   topics: initialTopics = defaultTopics,
 }: TopicLayoutPreviewProps) {
@@ -332,6 +355,23 @@ function TopicLayoutPreview({
       ) : (
         <p>No saved topics</p>
       )}
+=======
+function TopicLayoutPreview({ topics = defaultTopics }: TopicLayoutPreviewProps) {
+  if (topics.length === 0) {
+    return null;
+  }
+
+  const [selectedId, setSelectedId] = useState(topics[0]?.id);
+
+  return (
+    <>
+      <TopicEntry onSubmit={() => {}} />
+      <TopicList
+        topics={topics}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+      />
+>>>>>>> Stashed changes
     </>
   );
 }
