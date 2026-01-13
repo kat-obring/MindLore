@@ -1,3 +1,4 @@
+import re
 from typing import Protocol, List
 from app.prompts.repository import PromptRepository, render_prompt
 
@@ -23,5 +24,19 @@ class SuggestionService:
         """Get 3 suggestions for a topic."""
         prompt_template = self.prompt_repo.get_prompt("topics_first")
         final_prompt = render_prompt(prompt_template, topic)
-        self.llm_client.generate(final_prompt)
-        return []
+        response = self.llm_client.generate(final_prompt)
+        return parse_suggestions(response)
+
+def parse_suggestions(text: str) -> List[str]:
+    """Parse the LLM response into exactly 3 suggestions."""
+    # Pattern to find all markers (using lookahead to keep the marker in the split result)
+    pattern = r"(?=### Outline [ABC]:)"
+    parts = re.split(pattern, text)
+    
+    # Filter for parts that start with our marker and strip whitespace
+    suggestions = [p.strip() for p in parts if p.strip().startswith("### Outline")]
+    
+    if len(suggestions) != 3:
+        raise ValueError(f"Expected exactly 3 suggestions, found {len(suggestions)}")
+        
+    return suggestions
