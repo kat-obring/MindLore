@@ -1,11 +1,14 @@
 import re
-from typing import Protocol, List
+from typing import List, Protocol
+
 from app.prompts.repository import PromptRepository, render_prompt
+
 
 class LLMClient(Protocol):
     def generate(self, prompt: str) -> str:
         """Generate text from prompt."""
         ...
+
 
 class FakeLLMClient:
     def __init__(self):
@@ -15,6 +18,7 @@ class FakeLLMClient:
         self.last_prompt = prompt
         return ""
 
+
 class OpenAIClient:
     def __init__(self, api_key: str, model: str):
         self.api_key = api_key
@@ -22,6 +26,7 @@ class OpenAIClient:
 
     def generate(self, prompt: str) -> str:
         import httpx
+
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -35,11 +40,12 @@ class OpenAIClient:
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
                 json=data,
-                timeout=60.0
+                timeout=60.0,
             )
             response.raise_for_status()
             result = response.json()
             return result["choices"][0]["message"]["content"] or ""
+
 
 class SuggestionService:
     def __init__(self, prompt_repo: PromptRepository, llm_client: LLMClient):
@@ -53,16 +59,18 @@ class SuggestionService:
         response = self.llm_client.generate(final_prompt)
         return parse_suggestions(response)
 
+
 def parse_suggestions(text: str) -> List[str]:
     """Parse the LLM response into exactly 3 suggestions."""
-    # Pattern to find all markers (using lookahead to keep the marker in the split result)
+    # Pattern to find all markers.
+    # Uses lookahead to keep the marker in the split result.
     pattern = r"(?=### Outline [ABC]:)"
     parts = re.split(pattern, text)
-    
+
     # Filter for parts that start with our marker and strip whitespace
     suggestions = [p.strip() for p in parts if p.strip().startswith("### Outline")]
-    
+
     if len(suggestions) != 3:
         raise ValueError(f"Expected exactly 3 suggestions, found {len(suggestions)}")
-        
+
     return suggestions

@@ -5,6 +5,7 @@ from .api.suggestions import router as suggestions_router
 from .core.config import get_settings
 from .core.version import VERSION
 
+
 def create_app() -> FastAPI:
     settings = get_settings()
 

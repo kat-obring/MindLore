@@ -1,6 +1,7 @@
 import pytest
 from backend.app.suggestions.service import parse_suggestions
 
+
 def test_parse_suggestions_extracts_exactly_three_outlines():
     # Given a sample LLM response with 3 outlines
     llm_response = """
@@ -20,10 +21,10 @@ Some introductory text that should be ignored.
 
 Some trailing text that should be ignored.
 """
-    
+
     # When
     suggestions = parse_suggestions(llm_response)
-    
+
     # Then
     assert len(suggestions) == 3
     assert suggestions[0].strip().startswith("### Outline A:")
@@ -33,10 +34,11 @@ Some trailing text that should be ignored.
     assert "The Second Angle" in suggestions[1]
     assert "The Third Angle" in suggestions[2]
 
+
 def test_parse_suggestions_raises_error_if_not_exactly_three():
     # Given a response with only 2 outlines
     llm_response = "### Outline A: One\n\n### Outline B: Two"
-    
+
     # When / Then
     with pytest.raises(ValueError, match="Expected exactly 3 suggestions"):
         parse_suggestions(llm_response)
