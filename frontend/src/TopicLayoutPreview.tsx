@@ -183,7 +183,9 @@ function TopicLayoutPreview({
   topics: initialTopics = defaultTopics,
 }: TopicLayoutPreviewProps) {
   const [topicItems, setTopicItems] = useState(initialTopics);
-  const [selectedId, setSelectedId] = useState(initialTopics[0]?.id);
+  const [selectedId, setSelectedId] = useState<string | undefined>(
+    initialTopics[0]?.id,
+  );
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const hasTopics = topicItems.length > 0;
