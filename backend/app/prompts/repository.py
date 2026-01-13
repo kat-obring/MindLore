@@ -1,6 +1,5 @@
+from pathlib import Path
 from typing import Protocol
-
-import os
 
 class PromptRepository(Protocol):
     def get_prompt(self, name: str) -> str:
@@ -9,9 +8,12 @@ class PromptRepository(Protocol):
 
 class FilePromptRepository:
     def __init__(self, prompts_dir: str):
-        self.prompts_dir = prompts_dir
+        self.prompts_dir = Path(prompts_dir)
 
     def get_prompt(self, name: str) -> str:
-        file_path = os.path.join(self.prompts_dir, f"{name}.md")
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
+        file_path = self.prompts_dir / f"{name}.md"
+        return file_path.read_text(encoding="utf-8")
+
+def render_prompt(prompt_template: str, topic: str) -> str:
+    """Combine the prompt template with the topic."""
+    return f"{prompt_template}\n\nTopic:\n{topic}\n"
