@@ -115,6 +115,7 @@ interface TopicListProps {
   onGenerateSuggestions: (id: string) => void;
   onSelectSuggestion: (topicId: string, index: number) => void;
   isGenerating?: string | null;
+  generationError?: string | null;
 }
 
 function TopicList({
@@ -124,6 +125,7 @@ function TopicList({
   onGenerateSuggestions,
   onSelectSuggestion,
   isGenerating,
+  generationError,
 }: TopicListProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
@@ -155,20 +157,27 @@ function TopicList({
             {isSelected && (
               <>
                 {topic.suggestions.length === 0 ? (
-                  <button
-                    type="button"
-                    disabled={isGenerating === topic.id}
-                    onClick={() => onGenerateSuggestions(topic.id)}
-                    style={{
-                      ...entryButtonStyle,
-                      alignSelf: "flex-start",
-                      opacity: isGenerating === topic.id ? 0.5 : 1,
-                    }}
-                  >
-                    {isGenerating === topic.id
-                      ? "Generating..."
-                      : "Generate Suggestions"}
-                  </button>
+                  <div style={{ display: "flex", flexDirection: "column", gap: spacing.xs }}>
+                    <button
+                      type="button"
+                      disabled={isGenerating === topic.id}
+                      onClick={() => onGenerateSuggestions(topic.id)}
+                      style={{
+                        ...entryButtonStyle,
+                        alignSelf: "flex-start",
+                        opacity: isGenerating === topic.id ? 0.5 : 1,
+                      }}
+                    >
+                      {isGenerating === topic.id
+                        ? "Generating..."
+                        : "Generate Suggestions"}
+                    </button>
+                    {generationError && (
+                      <p style={{ color: colors.copper, margin: 0, fontSize: "0.8rem" }}>
+                        {generationError}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div style={{ display: "flex", gap: spacing.sm, flexWrap: "wrap" }}>
                     {topic.suggestions.map((suggestion, index) => {
@@ -228,6 +237,7 @@ function TopicLayoutPreview({
   const [topicItems, setTopicItems] = useState(initialTopics);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
 
   const hasTopics = topicItems.length > 0;
@@ -237,6 +247,7 @@ function TopicLayoutPreview({
     if (!topic) return;
 
     setIsGenerating(id);
+    setGenerationError(null);
     try {
       const response = await fetch("/api/suggestions", {
         method: "POST",
@@ -245,7 +256,8 @@ function TopicLayoutPreview({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate suggestions");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to generate suggestions");
       }
 
       const data = await response.json();
@@ -256,7 +268,7 @@ function TopicLayoutPreview({
       );
     } catch (error) {
       console.error(error);
-      // For now, we just log the error. In a real app, we'd show a UI message.
+      setGenerationError(error instanceof Error ? error.message : "An unknown error occurred");
     } finally {
       setIsGenerating(null);
     }
@@ -315,6 +327,7 @@ function TopicLayoutPreview({
           onGenerateSuggestions={handleGenerateSuggestions}
           onSelectSuggestion={handleSelectSuggestion}
           isGenerating={isGenerating}
+          generationError={generationError}
         />
       ) : (
         <p>No saved topics</p>

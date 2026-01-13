@@ -15,6 +15,32 @@ class FakeLLMClient:
         self.last_prompt = prompt
         return ""
 
+class OpenAIClient:
+    def __init__(self, api_key: str, model: str):
+        self.api_key = api_key
+        self.model = model
+
+    def generate(self, prompt: str) -> str:
+        import httpx
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        data = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        with httpx.Client() as client:
+            response = client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers=headers,
+                json=data,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            result = response.json()
+            return result["choices"][0]["message"]["content"] or ""
+
 class SuggestionService:
     def __init__(self, prompt_repo: PromptRepository, llm_client: LLMClient):
         self.prompt_repo = prompt_repo
