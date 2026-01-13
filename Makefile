@@ -30,7 +30,8 @@ backend-lint:
 	cd $(BACKEND_DIR) && ruff check .
 
 backend-format:
-	cd $(BACKEND_DIR) && black .
+	cd $(BACKEND_DIR) && ruff check . --fix
+	cd $(BACKEND_DIR) && ruff format .
 
 backend-test:
 	cd $(BACKEND_DIR) && pytest
