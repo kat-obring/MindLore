@@ -9,7 +9,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-CONTEXT_DIR = Path("data/context")
+from backend.app.core.config import get_settings
+
 SUPPORTED_EXTENSIONS = (".md", ".txt")
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
@@ -21,20 +22,23 @@ class ContextRecord:
 
 
 class ContextStore:
-    def __init__(self, root: Path = CONTEXT_DIR) -> None:
-        self.root = Path(root)
+    def __init__(self, root: Path | None = None) -> None:
+        self.root = Path(root) if root is not None else get_settings().context_dir
 
     def list_contexts(self) -> list[ContextRecord]:
         self._ensure_root()
 
         records: list[ContextRecord] = []
         for path in sorted(self.root.iterdir()):
-            if not path.is_file() or path.suffix not in SUPPORTED_EXTENSIONS:
+            if not path.is_file():
                 continue
-            if not SLUG_PATTERN.fullmatch(path.stem):
+            if path.suffix not in SUPPORTED_EXTENSIONS:
+                continue
+            slug = path.stem
+            if not SLUG_PATTERN.fullmatch(slug):
                 continue
             content = path.read_text(encoding="utf-8")
-            records.append(ContextRecord(slug=path.stem, content=content))
+            records.append(ContextRecord(slug=slug, content=content))
 
         return records
 

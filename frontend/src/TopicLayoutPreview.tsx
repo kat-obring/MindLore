@@ -110,7 +110,7 @@ function TopicEntry({ onSubmit, validationMessage }: TopicEntryProps) {
 interface TopicListProps {
   topics: Topic[];
   selectedId?: string;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | undefined) => void;
 }
 
 function TopicList({ topics, selectedId, onSelect }: TopicListProps) {

@@ -1,40 +1,22 @@
-import os
 from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from dotenv import load_dotenv
-from pydantic import BaseModel
-
-
-class Settings(BaseModel):
+class Settings(BaseSettings):
+    # These fields match your .env keys automatically (case-insensitive)
     app_env: str = "dev"
     openai_model: str = "gpt-5.2"
     port: int = 8000
     openai_api_key: str
 
-    def __init__(self, **data):
-        if not data:
-            data = self._load_env()
-        super().__init__(**data)
-
-    @classmethod
-    def _load_env(cls) -> dict:
-        values = {
-            "app_env": os.getenv("APP_ENV", cls.model_fields["app_env"].default),
-            "openai_model": os.getenv(
-                "OPENAI_MODEL", cls.model_fields["openai_model"].default
-            ),
-            "port": os.getenv("PORT", cls.model_fields["port"].default),
-            "openai_api_key": os.getenv("OPENAI_API_KEY"),
-        }
-
-        return values
-
-    @classmethod
-    def from_env(cls) -> "Settings":
-        load_dotenv()
-        return cls()
-
+    # This config tells Pydantic exactly where to find your file
+    # and to ignore extra variables like OPEN_AI_KEY if they exist
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings.from_env()
+    # Native BaseSettings handles the from_env logic internally
+    return Settings()

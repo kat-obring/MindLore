@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 
 def _clear_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    for key in ("APP_ENV", "OPENAI_MODEL", "PORT", "OPENAI_API_KEY"):
+    for key in ("APP_ENV", "OPENAI_MODEL", "PORT", "CONTEXT_DIR", "OPENAI_API_KEY"):
         monkeypatch.delenv(key, raising=False)
 
 
