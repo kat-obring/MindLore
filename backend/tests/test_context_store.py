@@ -62,6 +62,7 @@ def test_list_contexts_handles_concurrent_deletion(tmp_path, monkeypatch) -> Non
 
     # Mock Path.read_text to raise FileNotFoundError for topic-a.md
     from pathlib import Path
+
     original_read_text = Path.read_text
 
     def mock_read_text(self, *args, **kwargs):
