@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from .dependencies import get_session_dep, get_suggestion_service
 from ..models import Suggestion, Topic
 from ..suggestions.service import SuggestionService
-from .dependencies import get_session_dep, get_suggestion_service
 
 router = APIRouter(prefix="/api")
 
