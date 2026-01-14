@@ -1,8 +1,7 @@
 import pytest
-from sqlmodel import text
-
 from backend.app.core.config import Settings
 from backend.app.core.db import get_engine, get_session
+from sqlmodel import text
 
 
 @pytest.mark.asyncio

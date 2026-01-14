@@ -2,6 +2,7 @@ from pathlib import Path
 
 from backend.app.prompts.repository import FilePromptRepository
 
+
 def test_file_prompt_repository_loads_topics_first():
     # Resolve prompts directory relative to repo root to work from any cwd
     repo_root = Path(__file__).resolve().parents[2]

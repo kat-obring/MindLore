@@ -1,11 +1,10 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import inspect
-from sqlmodel import SQLModel
-
 from backend.app.core.config import get_settings
 from backend.app.core.db import get_engine
 from backend.app.main import create_app
+from fastapi.testclient import TestClient
+from sqlalchemy import inspect
+from sqlmodel import SQLModel
 
 
 @pytest.mark.asyncio

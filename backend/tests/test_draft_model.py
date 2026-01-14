@@ -1,10 +1,9 @@
 import pytest
-from sqlmodel import SQLModel, select
-
 from backend.app.core.config import Settings
 from backend.app.core.db import get_engine, get_session
 from backend.app.models.draft import Draft
 from backend.app.models.topic import Topic
+from sqlmodel import SQLModel, select
 
 
 @pytest.mark.asyncio
