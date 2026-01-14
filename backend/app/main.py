@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-from .api.dependencies import get_settings, _ensure_sqlite_dir
-from .core.db import get_engine
 
+from .api.dependencies import _ensure_sqlite_dir, get_settings
 from .api.health import router as health_router
 from .api.suggestions import router as suggestions_router
 from .api.topics import router as topics_router
+from .core.db import get_engine
 from .core.version import VERSION
 
 

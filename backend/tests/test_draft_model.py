@@ -3,8 +3,8 @@ from sqlmodel import SQLModel, select
 
 from backend.app.core.config import Settings
 from backend.app.core.db import get_engine, get_session
-from backend.app.models.topic import Topic
 from backend.app.models.draft import Draft
+from backend.app.models.topic import Topic
 
 
 @pytest.mark.asyncio
@@ -26,7 +26,11 @@ async def test_draft_persists_with_topic_fk(tmp_path) -> None:
         await session.commit()
         await session.refresh(topic)
 
-        draft = Draft(topic_id=topic.id, content="Draft body", selected_suggestion_index=1)
+        draft = Draft(
+            topic_id=topic.id,
+            content="Draft body",
+            selected_suggestion_index=1,
+        )
         session.add(draft)
         await session.commit()
         await session.refresh(draft)

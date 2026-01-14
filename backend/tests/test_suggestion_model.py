@@ -3,8 +3,8 @@ from sqlmodel import SQLModel, select
 
 from backend.app.core.config import Settings
 from backend.app.core.db import get_engine, get_session
-from backend.app.models.topic import Topic
 from backend.app.models.suggestion import Suggestion
+from backend.app.models.topic import Topic
 
 
 @pytest.mark.asyncio
@@ -32,7 +32,9 @@ async def test_suggestion_persists_with_topic_fk(tmp_path) -> None:
         await session.commit()
 
         result = await session.exec(
-            select(Suggestion).where(Suggestion.topic_id == topic.id).order_by(Suggestion.position)
+            select(Suggestion)
+            .where(Suggestion.topic_id == topic.id)
+            .order_by(Suggestion.position)
         )
         saved = result.all()
 

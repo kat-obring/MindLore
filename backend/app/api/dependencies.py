@@ -34,7 +34,7 @@ def get_suggestion_service() -> SuggestionService:
     return SuggestionService(get_prompt_repository(), get_llm_client())
 
 
-async def get_session_dep(settings: Settings = Depends(get_settings)):
+async def get_session_dep(settings: Settings = Depends(get_settings)):  # noqa: B008
     _ensure_sqlite_dir(settings.database_url)
     engine = get_engine(settings)
     async with engine.begin() as conn:

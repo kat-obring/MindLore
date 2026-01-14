@@ -47,7 +47,9 @@ async def test_post_suggestions_persists_topic_and_suggestions(tmp_path) -> None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post("/api/suggestions", json={"topic": "Persisted Topic"})
+        response = await client.post(
+            "/api/suggestions", json={"topic": "Persisted Topic"}
+        )
 
     assert response.status_code == 200
     body = response.json()
@@ -63,7 +65,9 @@ async def test_post_suggestions_persists_topic_and_suggestions(tmp_path) -> None
         assert saved_topic.title == "Persisted Topic"
 
         suggestion_result = await verify_session.exec(
-            select(Suggestion).where(Suggestion.topic_id == saved_topic.id).order_by(Suggestion.position)
+            select(Suggestion)
+            .where(Suggestion.topic_id == saved_topic.id)
+            .order_by(Suggestion.position)
         )
         saved_suggestions = suggestion_result.all()
         assert [s.content for s in saved_suggestions] == [

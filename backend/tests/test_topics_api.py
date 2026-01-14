@@ -1,12 +1,12 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlmodel import SQLModel, select
 
+from backend.app.api.dependencies import get_session_dep, get_settings
 from backend.app.core.config import Settings
 from backend.app.core.db import get_engine, get_session
 from backend.app.main import create_app
 from backend.app.models import Topic
-from backend.app.api.dependencies import get_session_dep, get_settings
 
 
 @pytest.mark.asyncio
