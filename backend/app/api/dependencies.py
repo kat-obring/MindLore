@@ -1,8 +1,11 @@
 import os
 
 from ..core.config import get_settings
+from ..core.db import get_engine, get_session
 from ..prompts.repository import FilePromptRepository
 from ..suggestions.service import LLMClient, OpenAIClient, SuggestionService
+from ..core.config import Settings
+from fastapi import Depends
 
 
 def get_prompt_repository() -> FilePromptRepository:
@@ -21,3 +24,9 @@ def get_llm_client() -> LLMClient:
 
 def get_suggestion_service() -> SuggestionService:
     return SuggestionService(get_prompt_repository(), get_llm_client())
+
+
+async def get_session_dep(settings: Settings = Depends(get_settings)):
+    engine = get_engine(settings)
+    async with get_session(engine) as session:
+        yield session
