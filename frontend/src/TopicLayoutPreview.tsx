@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
-
-export interface Topic {
-  id: string;
-  title: string;
-  detail: string;
-  suggestions: string[];
-  selectedSuggestionIndex?: number;
-}
+import { Topic } from "./types";
 
 const defaultTopics: Topic[] = [];
 

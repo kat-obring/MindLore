@@ -2,7 +2,8 @@ import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import TopicLayoutPreview, { type Topic } from "./TopicLayoutPreview";
+import TopicLayoutPreview from "./TopicLayoutPreview";
+import { Topic } from "./types";
 
 const sampleTopics: Topic[] = [
   {
