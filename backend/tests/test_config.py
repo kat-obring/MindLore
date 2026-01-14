@@ -4,7 +4,14 @@ from pydantic import ValidationError
 
 
 def _clear_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    for key in ("APP_ENV", "OPENAI_MODEL", "PORT", "CONTEXT_DIR", "OPENAI_API_KEY"):
+    for key in (
+        "APP_ENV",
+        "OPENAI_MODEL",
+        "PORT",
+        "CONTEXT_DIR",
+        "OPENAI_API_KEY",
+        "DATABASE_URL",
+    ):
         monkeypatch.delenv(key, raising=False)
 
 
@@ -26,6 +33,7 @@ def test_settings_apply_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_MODEL", "gpt-4.1")
     monkeypatch.setenv("PORT", "9001")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-123")
+    monkeypatch.setenv("DATABASE_URL", "sqlite+aiosqlite:///./tmp/test.db")
 
     settings = Settings(_env_file=None)
 
@@ -33,6 +41,7 @@ def test_settings_apply_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.openai_model == "gpt-4.1"
     assert settings.port == 9001
     assert settings.openai_api_key == "sk-test-123"
+    assert settings.database_url == "sqlite+aiosqlite:///./tmp/test.db"
 
 
 def test_settings_require_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -46,3 +55,12 @@ def test_settings_require_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = Settings(_env_file=None)
 
     assert settings.openai_api_key == "sk-required-123"
+
+
+def test_settings_database_url_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    _clear_env(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-default-123")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.database_url == "sqlite+aiosqlite:///./var/mindlore.db"

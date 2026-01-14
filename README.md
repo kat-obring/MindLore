@@ -27,8 +27,8 @@ make frontend-install
 ## Lint and Test
 
 ```bash
-make lint   # ruff + black --check (backend), eslint (frontend)
-make test   # pytest (backend), vitest (frontend)
+make lint   # backend: ruff check + ruff format --check; frontend: eslint
+make test   # backend: pytest; frontend: vitest
 ```
 
 Run tests separately:
@@ -36,6 +36,19 @@ Run tests separately:
 - Backend: `make backend-test` (or `cd backend && pytest`)
 - Frontend: `make frontend-test` (or `cd frontend && npm test -- --run`)
 - All tests: `make test`
+
+Lint/check locally with the same commands CI uses:
+
+```bash
+# backend
+cd backend
+.venv/bin/ruff check .
+.venv/bin/ruff format --check .
+
+# frontend
+cd frontend
+npm run lint
+```
 
 ## Run Locally
 

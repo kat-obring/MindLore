@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5.2"
     port: int = 8000
     context_dir: Path = Path("data/context")
+    database_url: str = "sqlite+aiosqlite:///./var/mindlore.db"
     openai_api_key: str
 
     # This config tells Pydantic exactly where to find your file

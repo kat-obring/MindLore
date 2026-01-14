@@ -1,12 +1,13 @@
+from pathlib import Path
+
 from backend.app.prompts.repository import FilePromptRepository
 
 
 def test_file_prompt_repository_loads_topics_first():
-    # Given a repository pointing to the prompts directory
-    # In tests, we need to find where the prompts/ folder is relative to the test runner
-    # The workspace root contains prompts/ and backend/
-    # If running from backend/ directory, it is ../prompts
-    repo = FilePromptRepository(prompts_dir="../prompts")
+    # Resolve prompts directory relative to repo root to work from any cwd
+    repo_root = Path(__file__).resolve().parents[2]
+    prompts_dir = repo_root / "prompts"
+    repo = FilePromptRepository(prompts_dir=prompts_dir)
 
     # When loading the 'topics_first' prompt
     content = repo.get_prompt("topics_first")

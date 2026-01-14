@@ -1,0 +1,49 @@
+:root {
+  --color-copper: #b87333;
+  --color-turquoise: #30d5c8;
+  --color-charcoal: #4a4a48;
+  --color-gunmetal: #2c2c2c;
+  --color-ivory: #f9f6ef;
+  --color-champagne: #e8d8c3;
+  --font-heading: "Lora", serif;
+  --font-body: "Inter", "Inter Variable", system-ui, -apple-system, sans-serif;
+
+  background-color: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ivory);
+  color: var(--color-gunmetal);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+.mindlore-root {
+  background-color: var(--color-ivory);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--color-gunmetal);
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}

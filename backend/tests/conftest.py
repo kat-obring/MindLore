@@ -1,4 +1,5 @@
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -17,8 +18,12 @@ if PROJECT_ROOT_STR not in sys.path:
 def app_client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     # Ensure settings reload with known env for deterministic tests.
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
     get_settings.cache_clear()
+    tmp_dir = Path(tempfile.mkdtemp())
+    db_path = tmp_dir / "test.db"
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-123")
+    monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{db_path}")
 
     app = create_app()
     return TestClient(app)
