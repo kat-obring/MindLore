@@ -12,5 +12,16 @@ describe("suggestionParser", () => {
       
       expect(result.angle).toBe("The Tactical Approach");
     });
+
+    it("should extract the hook content", () => {
+      const raw = `### Outline A: The Tactical Approach
+
+* **Hook:** This is the hook content
+* **Example:** Some example`;
+
+      const result = parseSuggestion(raw);
+
+      expect(result.hook).toBe("This is the hook content");
+    });
   });
 });
