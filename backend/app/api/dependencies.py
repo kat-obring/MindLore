@@ -1,11 +1,15 @@
 import os
 
-from ..core.config import get_settings
+from pathlib import Path
+
+from fastapi import Depends
+from sqlalchemy.engine.url import make_url
+from sqlmodel import SQLModel
+
+from ..core.config import Settings, get_settings
 from ..core.db import get_engine, get_session
 from ..prompts.repository import FilePromptRepository
 from ..suggestions.service import LLMClient, OpenAIClient, SuggestionService
-from ..core.config import Settings
-from fastapi import Depends
 
 
 def get_prompt_repository() -> FilePromptRepository:
@@ -27,6 +31,18 @@ def get_suggestion_service() -> SuggestionService:
 
 
 async def get_session_dep(settings: Settings = Depends(get_settings)):
+    _ensure_sqlite_dir(settings.database_url)
     engine = get_engine(settings)
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
     async with get_session(engine) as session:
         yield session
+
+
+def _ensure_sqlite_dir(database_url: str) -> None:
+    url = make_url(database_url)
+    if url.drivername.startswith("sqlite") and url.database:
+        path = Path(url.database)
+        if not path.is_absolute():
+            path = Path.cwd() / path
+        path.parent.mkdir(parents=True, exist_ok=True)
