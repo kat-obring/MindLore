@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
 import { Topic } from "./types";
+import { parseSuggestion } from "./utils/suggestionParser";
 
 const defaultTopics: Topic[] = [];
 
@@ -43,6 +44,70 @@ const entryButtonStyle = {
   backgroundColor: colors.champagne,
   cursor: "pointer",
 } as const;
+
+const suggestionDetailStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: spacing.xs,
+  backgroundColor: colors.champagne,
+  border: `1px solid ${colors.turquoise}`,
+  borderRadius: radius.md,
+  padding: spacing.sm,
+} as const;
+
+const suggestionFieldStyle = {
+  display: "flex",
+  gap: spacing.xs,
+  alignItems: "flex-start",
+} as const;
+
+const suggestionLabelStyle = {
+  minWidth: "90px",
+  fontWeight: 700,
+  color: colors.gunmetal,
+} as const;
+
+const suggestionValueStyle = {
+  color: colors.charcoal,
+  lineHeight: 1.4,
+} as const;
+
+const stripQuotes = (value: string) =>
+  value.replace(/^[“”"']+/, "").replace(/[“”"']+$/, "");
+
+function StructuredSuggestion({ suggestion }: { suggestion: string }) {
+  const parsed = parseSuggestion(suggestion);
+  const cleanAngle = parsed.angle ? stripQuotes(parsed.angle) : "";
+  const fields = [
+    { key: "hook", label: "Hook", value: stripQuotes(parsed.hook) },
+    { key: "example", label: "Example", value: stripQuotes(parsed.example) },
+    { key: "boundary", label: "Boundary", value: stripQuotes(parsed.boundary) },
+    { key: "close", label: "Close", value: stripQuotes(parsed.close) },
+    { key: "question", label: "Question", value: stripQuotes(parsed.question) },
+  ].filter((field) => field.value);
+
+  const hasStructuredData = parsed.angle || fields.length > 0;
+
+  if (!hasStructuredData) {
+    return <>{suggestion}</>;
+  }
+
+  return (
+    <div style={suggestionDetailStyle}>
+      {cleanAngle && (
+        <h3 style={{ margin: 0, color: colors.midnight }}>{cleanAngle}</h3>
+      )}
+      <div style={{ display: "flex", flexDirection: "column", gap: spacing.xs }}>
+        {fields.map((field) => (
+          <div key={field.key} style={suggestionFieldStyle}>
+            <span style={suggestionLabelStyle}>{field.label}</span>
+            <span style={suggestionValueStyle}>{field.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface TopicLayoutPreviewProps {
   topics?: Topic[];
@@ -174,6 +239,11 @@ function TopicList({
                 ) : (
                   <div style={{ display: "flex", gap: spacing.sm, flexWrap: "wrap" }}>
                     {topic.suggestions.map((suggestion, index) => {
+                      const parsed = parseSuggestion(suggestion);
+                      const label =
+                        (parsed.angle && stripQuotes(parsed.angle)) ||
+                        suggestion.split("\n")[0].replace(/^#+\s*/, "").trim() ||
+                        `Suggestion ${index + 1}`;
                       const isSuggestionSelected =
                         topic.selectedSuggestionIndex === index;
                       return (
@@ -193,8 +263,7 @@ function TopicList({
                             fontSize: "0.8rem",
                           }}
                         >
-                          {/* Use the first line as the button name, or just Outline A/B/C */}
-                          {suggestion.split("\n")[0] || `Suggestion ${index + 1}`}
+                          {label}
                         </button>
                       );
                     })}
@@ -211,9 +280,13 @@ function TopicList({
                     whiteSpace: "pre-wrap",
                   }}
                 >
-                  {topic.selectedSuggestionIndex !== undefined
-                    ? topic.suggestions[topic.selectedSuggestionIndex]
-                    : topic.detail}
+                  {topic.selectedSuggestionIndex !== undefined ? (
+                    <StructuredSuggestion
+                      suggestion={topic.suggestions[topic.selectedSuggestionIndex]}
+                    />
+                  ) : (
+                    topic.detail
+                  )}
                 </div>
               </>
             )}

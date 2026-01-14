@@ -332,15 +332,90 @@ describe("TopicLayoutPreview", () => {
 
     // Check that suggestions are rendered
     expect(
-      await screen.findByRole("button", { name: /outline a: angle 1/i }),
+      await screen.findByRole("button", { name: /angle 1/i }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /outline b: angle 2/i }),
+      await screen.findByRole("button", { name: /angle 2/i }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /outline c: angle 3/i }),
+      await screen.findByRole("button", { name: /angle 3/i }),
     ).toBeInTheDocument();
 
     fetchSpy.mockRestore();
+  });
+
+  it("renders structured suggestion fields when a suggestion is selected", () => {
+    const structuredSuggestion = [
+      "### Outline A: Ambiguity is a test requirement",
+      "* **Hook:** “If the ticket just says ‘two’, that is not a small requirement, it is an unowned decision.”",
+      "* **Example:** A story title is literally “two” after a rushed refinement, and the team starts building anyway; you probe: two what (items, seconds, users), where shown, what counts as wrong, and who signs off on the interpretation.",
+      "* **Boundary:** This is not about blocking delivery over wording; if there’s a strong shared context (same feature, same glossary, same recent decisions), you can move quickly, but still write down the interpretation.",
+      "* **Close:** Treat single-word requirements as a signal to switch from verification mode to decision-clarification mode.",
+      "* **Question:** When you see this kind of ambiguity, do you push for a decision, or do you document assumptions and proceed?",
+    ].join("\n");
+
+    render(
+      <TopicLayoutPreview
+        topics={[
+          {
+            id: "topic-structured",
+            title: "two",
+            detail: "",
+            suggestions: [structuredSuggestion],
+          },
+        ]}
+      />,
+    );
+
+    // Open the topic and select the suggestion
+    fireEvent.click(screen.getByRole("button", { name: /two/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Ambiguity is a test requirement/i }),
+    );
+
+    const hookLabel = screen.getByText("Hook");
+    expect(hookLabel).toBeInTheDocument();
+    const hookValue = screen.getByText(
+      /If the ticket just says ‘two’, that is not a small requirement/i,
+    );
+    expect(hookValue).toBeInTheDocument();
+    expect(hookValue.textContent?.startsWith("“")).toBe(false);
+    expect(hookValue.textContent?.endsWith("”")).toBe(false);
+    expect(screen.getByText("Example")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/\*\*Hook:\*\*/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders suggestion buttons with parsed angle text instead of raw markdown", () => {
+    const structuredSuggestion = [
+      "### Outline C: “The second check is not a backup plan”",
+      "* **Hook:** “The second test often gets treated like a safety net, but it’s more valuable when it’s a different type of evidence.”",
+    ].join("\n");
+
+    render(
+      <TopicLayoutPreview
+        topics={[
+          {
+            id: "topic-buttons",
+            title: "two",
+            detail: "",
+            suggestions: [structuredSuggestion],
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /two/i }));
+
+    const suggestionButton = screen.getByRole("button", {
+      name: /The second check is not a backup plan/i,
+    });
+
+    expect(suggestionButton).toBeInTheDocument();
+    expect(suggestionButton.textContent?.includes("###")).toBe(false);
+    expect(suggestionButton.textContent?.includes("**")).toBe(false);
+    expect(suggestionButton.textContent?.startsWith("“")).toBe(false);
+    expect(suggestionButton.textContent?.endsWith("”")).toBe(false);
   });
 });
