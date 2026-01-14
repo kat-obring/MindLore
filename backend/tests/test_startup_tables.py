@@ -1,11 +1,10 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import inspect
-from sqlmodel import SQLModel
-
 from backend.app.core.config import get_settings
 from backend.app.core.db import get_engine
 from backend.app.main import create_app
+from fastapi.testclient import TestClient
+from sqlalchemy import inspect
+from sqlmodel import SQLModel
 
 
 @pytest.mark.asyncio
@@ -23,6 +22,7 @@ async def test_startup_creates_tables(tmp_path, monkeypatch):
     engine = get_engine(settings)
 
     async with engine.begin() as conn:
+
         def _get_tables(sync_conn):
             insp = inspect(sync_conn)
             return insp.get_table_names()
