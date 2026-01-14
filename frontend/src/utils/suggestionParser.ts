@@ -1,11 +1,4 @@
-export interface StructuredSuggestion {
-  angle: string;
-  hook: string;
-  example: string;
-  boundary: string;
-  close: string;
-  question: string;
-}
+import { StructuredSuggestion } from "../types";
 
 export function parseSuggestion(raw: string): StructuredSuggestion {
   const extractField = (field: string) => {
