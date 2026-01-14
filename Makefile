@@ -1,7 +1,7 @@
-PYTHON := python3
-PIP := $(PYTHON) -m pip
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
+BACKEND_PYTHON := $(CURDIR)/$(BACKEND_DIR)/.venv/bin/python
+BACKEND_PIP := $(BACKEND_PYTHON) -m pip
 PORT ?= 8000
 
 .PHONY: help backend-install backend-lint backend-format backend-test frontend-install frontend-lint frontend-test frontend-build lint test install
@@ -24,7 +24,7 @@ help:
 install: backend-install frontend-install
 
 backend-install:
-	cd $(BACKEND_DIR) && $(PIP) install -e ".[dev]"
+	cd $(BACKEND_DIR) && $(BACKEND_PIP) install -e ".[dev]"
 
 backend-lint:
 	cd $(BACKEND_DIR) && ruff check .
@@ -37,7 +37,7 @@ backend-test:
 	cd $(BACKEND_DIR) && pytest
 
 backend-serve:
-	cd $(BACKEND_DIR) && uvicorn app.main:create_app --factory --reload --host 0.0.0.0 --port $(PORT)
+	$(BACKEND_PYTHON) -m uvicorn app.main:create_app --factory --reload --host 0.0.0.0 --port $(PORT) --app-dir $(BACKEND_DIR)
 
 frontend-install:
 	cd $(FRONTEND_DIR) && npm install

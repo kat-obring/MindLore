@@ -1,16 +1,27 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from sqlmodel import SQLModel
+from .api.dependencies import get_settings, _ensure_sqlite_dir
+from .core.db import get_engine
 
 from .api.health import router as health_router
 from .api.suggestions import router as suggestions_router
 from .api.topics import router as topics_router
-from .core.config import get_settings
 from .core.version import VERSION
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
 
-    app = FastAPI(title="MindLore", version=VERSION)
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        _ensure_sqlite_dir(settings.database_url)
+        engine = get_engine(settings)
+        async with engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.create_all)
+        yield
+
+    app = FastAPI(title="MindLore", version=VERSION, lifespan=lifespan)
     app.state.settings = settings
     app.state.version = VERSION
 

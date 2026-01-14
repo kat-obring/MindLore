@@ -13,8 +13,12 @@ from ..suggestions.service import LLMClient, OpenAIClient, SuggestionService
 
 
 def get_prompt_repository() -> FilePromptRepository:
-    # Default to prompts directory relative to project root
-    prompts_dir = os.getenv("PROMPTS_DIR", "../prompts")
+    env_dir = os.getenv("PROMPTS_DIR")
+    if env_dir:
+        return FilePromptRepository(prompts_dir=env_dir)
+
+    repo_root = Path(__file__).resolve().parents[3]
+    prompts_dir = repo_root / "prompts"
     return FilePromptRepository(prompts_dir=prompts_dir)
 
 

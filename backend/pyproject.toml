@@ -38,3 +38,6 @@ skip-magic-trailing-comma = false
 addopts = "-q"
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[tool.setuptools]
+packages = ["app"]
