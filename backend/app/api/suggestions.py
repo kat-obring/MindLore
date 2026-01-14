@@ -43,9 +43,7 @@ async def create_suggestions(
     await session.refresh(topic)
 
     for idx, content in enumerate(suggestions):
-        session.add(
-            Suggestion(topic_id=topic.id, content=content, position=idx)
-        )
+        session.add(Suggestion(topic_id=topic.id, content=content, position=idx))
     await session.commit()
 
     return SuggestionResponse(suggestions=suggestions)
