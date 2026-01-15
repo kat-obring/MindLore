@@ -35,3 +35,10 @@ def test_create_app_sets_version_on_state(monkeypatch) -> None:
 
     assert app.state.version == VERSION
     assert isinstance(VERSION, str) and VERSION
+
+
+def test_docs_endpoint_serves_swagger_ui(app_client) -> None:
+    response = app_client.get("/docs")
+
+    assert response.status_code == 200
+    assert "Swagger UI" in response.text
