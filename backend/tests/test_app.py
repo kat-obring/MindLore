@@ -52,3 +52,12 @@ def test_openapi_schema_endpoint_returns_schema(app_client) -> None:
     assert isinstance(payload, dict)
     assert "openapi" in payload
     assert "paths" in payload
+
+
+def test_openapi_schema_includes_title_and_version(app_client) -> None:
+    response = app_client.get("/openapi.json")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["info"]["title"] == "MindLore"
+    assert payload["info"]["version"] == app_client.app.state.version
