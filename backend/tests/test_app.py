@@ -42,3 +42,13 @@ def test_docs_endpoint_serves_swagger_ui(app_client) -> None:
 
     assert response.status_code == 200
     assert "Swagger UI" in response.text
+
+
+def test_openapi_schema_endpoint_returns_schema(app_client) -> None:
+    response = app_client.get("/openapi.json")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert isinstance(payload, dict)
+    assert "openapi" in payload
+    assert "paths" in payload
