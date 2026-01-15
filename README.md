@@ -63,6 +63,16 @@ npm run dev
   - From `backend/`: `uvicorn app.main:create_app --factory --reload --host 0.0.0.0 --port 8000`
   - Or use Make target: `make backend-serve` (respects `PORT` env/var)
 
+## API Docs (Swagger)
+
+When the backend is running, Swagger UI is available at:
+
+- `http://localhost:8000/docs`
+
+The OpenAPI schema is available at:
+
+- `http://localhost:8000/openapi.json`
+
 ## CI
 
 GitHub Actions workflow runs lint and tests for backend and frontend on pushes/PRs to main/master.
