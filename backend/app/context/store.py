@@ -9,6 +9,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from ..core.config import get_settings
+
 SUPPORTED_EXTENSIONS = (".md", ".txt")
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
@@ -20,8 +22,8 @@ class ContextRecord:
 
 
 class ContextStore:
-    def __init__(self, root: Path) -> None:
-        self.root = root
+    def __init__(self, root: Path | None = None) -> None:
+        self.root = root or get_settings().context_dir
 
     def list_contexts(self) -> list[ContextRecord]:
         self._ensure_root()
