@@ -94,10 +94,11 @@ describe("TopicLayoutPreview", () => {
 
     expect(topicInput).toBeInTheDocument();
     expect(saveButton).toBeInTheDocument();
-    expect(
+    const isInputAboveFirstTopic = Boolean(
       topicInput.compareDocumentPosition(firstTopicButton) &
         Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    );
+    expect(isInputAboveFirstTopic).toBeTruthy();
   });
 
   it("pressing Enter saves a non-empty trimmed topic, clears the input, and prepends it", () => {

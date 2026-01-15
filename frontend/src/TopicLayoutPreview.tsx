@@ -1,79 +1,21 @@
 import React, { useState } from "react";
+import {
+  entryButtonStyle,
+  entryContainerStyle,
+  entryInputStyle,
+  entryRowStyle,
+  suggestionDetailStyle,
+  suggestionFieldStyle,
+  suggestionLabelStyle,
+  suggestionValueStyle,
+  topicButtonStyle,
+} from "./design/TopicLayoutPreview.styles";
 import { colors, spacing, radius } from "./design/tokens";
 import { Topic } from "./types";
+import { stripQuotes } from "./utils/strings";
 import { parseSuggestion } from "./utils/suggestionParser";
 
 const defaultTopics: Topic[] = [];
-
-const topicButtonStyle = {
-  textAlign: "left",
-  padding: spacing.xs,
-  borderRadius: radius.sm,
-  border: "none",
-  background: "transparent",
-  cursor: "pointer",
-  fontWeight: 600,
-  color: colors.midnight,
-} as const;
-
-const entryContainerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: spacing.xs,
-  alignItems: "stretch",
-  marginBottom: spacing.sm,
-} as const;
-
-const entryRowStyle = {
-  display: "flex",
-  gap: spacing.sm,
-  alignItems: "center",
-} as const;
-
-const entryInputStyle = {
-  flex: 1,
-  padding: spacing.xs,
-  borderRadius: radius.sm,
-  border: `1px solid ${colors.charcoal}`,
-} as const;
-
-const entryButtonStyle = {
-  padding: `${spacing.xs} ${spacing.sm}`,
-  borderRadius: radius.sm,
-  border: `1px solid ${colors.charcoal}`,
-  backgroundColor: colors.champagne,
-  cursor: "pointer",
-} as const;
-
-const suggestionDetailStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: spacing.xs,
-  backgroundColor: colors.champagne,
-  border: `1px solid ${colors.turquoise}`,
-  borderRadius: radius.md,
-  padding: spacing.sm,
-} as const;
-
-const suggestionFieldStyle = {
-  display: "flex",
-  gap: spacing.xs,
-  alignItems: "flex-start",
-} as const;
-
-const suggestionLabelStyle = {
-  minWidth: "90px",
-  fontWeight: 700,
-  color: colors.gunmetal,
-} as const;
-
-const suggestionValueStyle = {
-  color: colors.charcoal,
-  lineHeight: 1.4,
-} as const;
-
-const stripQuotes = (value: string) =>
-  value.replace(/^[“”"']+/, "").replace(/[“”"']+$/, "");
 
 function StructuredSuggestion({ suggestion }: { suggestion: string }) {
   const parsed = parseSuggestion(suggestion);

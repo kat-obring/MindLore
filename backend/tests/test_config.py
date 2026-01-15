@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from backend.app.core.config import Settings
 from pydantic import ValidationError
@@ -20,18 +22,23 @@ def test_settings_load_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-default-123")
 
     settings = Settings(_env_file=None)
+    repo_root = Path(__file__).resolve().parents[2]
 
     assert settings.app_env == "dev"
     assert settings.openai_model == "gpt-5.2"
     assert settings.port == 8000
     assert str(settings.context_dir) == "data/context"
+    assert settings.prompts_dir == repo_root / "prompts"
 
 
-def test_settings_apply_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_settings_apply_env_overrides(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     _clear_env(monkeypatch)
     monkeypatch.setenv("APP_ENV", "test")
     monkeypatch.setenv("OPENAI_MODEL", "gpt-4.1")
     monkeypatch.setenv("PORT", "9001")
+    monkeypatch.setenv("PROMPTS_DIR", str(tmp_path))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-123")
     monkeypatch.setenv("DATABASE_URL", "sqlite+aiosqlite:///./tmp/test.db")
 
@@ -40,6 +47,7 @@ def test_settings_apply_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.app_env == "test"
     assert settings.openai_model == "gpt-4.1"
     assert settings.port == 9001
+    assert settings.prompts_dir == tmp_path
     assert settings.openai_api_key == "sk-test-123"
     assert settings.database_url == "sqlite+aiosqlite:///./tmp/test.db"
 
