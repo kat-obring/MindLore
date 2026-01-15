@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { colors, spacing, radius } from "./design/tokens";
 import { Topic } from "./types";
+import { stripQuotes } from "./utils/strings";
 import { parseSuggestion } from "./utils/suggestionParser";
 
 const defaultTopics: Topic[] = [];
@@ -71,9 +72,6 @@ const suggestionValueStyle = {
   color: colors.charcoal,
   lineHeight: 1.4,
 } as const;
-
-const stripQuotes = (value: string) =>
-  value.replace(/^[“”"']+/, "").replace(/[“”"']+$/, "");
 
 function StructuredSuggestion({ suggestion }: { suggestion: string }) {
   const parsed = parseSuggestion(suggestion);
