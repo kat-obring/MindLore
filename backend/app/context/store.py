@@ -58,9 +58,9 @@ class ContextStore:
         self.root.mkdir(parents=True, exist_ok=True)
 
     def _validate_slug(self, slug: str) -> str:
-        if not slug or not SLUG_PATTERN.fullmatch(slug):
-            raise ValueError(
-                "Slug must use lowercase letters, numbers, and hyphens only "
-                "(e.g., topic-1)."
-            )
-        return slug
+        if slug and SLUG_PATTERN.fullmatch(slug):
+            return slug
+        raise ValueError(
+            "Slug must use lowercase letters, numbers, and hyphens only "
+            "(e.g., topic-1)."
+        )
