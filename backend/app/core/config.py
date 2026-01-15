@@ -3,6 +3,8 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 
 class Settings(BaseSettings):
     # These fields match your .env keys automatically (case-insensitive)
@@ -10,6 +12,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5.2"
     port: int = 8000
     context_dir: Path = Path("data/context")
+    prompts_dir: Path = REPO_ROOT / "prompts"
     database_url: str = "sqlite+aiosqlite:///./var/mindlore.db"
     openai_api_key: str
 
