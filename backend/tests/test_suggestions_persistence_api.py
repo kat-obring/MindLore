@@ -26,7 +26,7 @@ async def test_post_suggestions_persists_topic_and_suggestions(tmp_path) -> None
     db_path = tmp_path / "test.db"
     settings = Settings(
         _env_file=None,
-        openai_api_key="sk-test",
+        claude_api_key="sk-test",
         database_url=f"sqlite+aiosqlite:///{db_path}",
     )
     engine = get_engine(settings)

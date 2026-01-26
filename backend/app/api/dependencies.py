@@ -7,7 +7,7 @@ from sqlmodel import SQLModel
 from ..core.config import Settings, get_settings
 from ..core.db import get_engine, get_session
 from ..prompts.repository import FilePromptRepository
-from ..suggestions.service import LLMClient, OpenAIClient, SuggestionService
+from ..suggestions.service import ClaudeClient, LLMClient, SuggestionService
 
 
 def get_prompt_repository() -> FilePromptRepository:
@@ -20,7 +20,7 @@ def get_llm_client() -> LLMClient:
     # In a real app, we might check APP_ENV or similar
     # For now, if we have a real key, we can use the real client
     # but for tests, we will use dependency_overrides.
-    return OpenAIClient(api_key=settings.openai_api_key, model=settings.openai_model)
+    return ClaudeClient(api_key=settings.claude_api_key, model=settings.claude_model)
 
 
 def get_suggestion_service() -> SuggestionService:
