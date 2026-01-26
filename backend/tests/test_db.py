@@ -9,7 +9,7 @@ async def test_get_session_runs_simple_query(tmp_path) -> None:
     db_path = tmp_path / "test.db"
     settings = Settings(
         _env_file=None,
-        openai_api_key="sk-test",
+        claude_api_key="sk-test",
         database_url=f"sqlite+aiosqlite:///{db_path}",
     )
 

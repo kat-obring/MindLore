@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 
 def _set_required_env() -> None:
-    os.environ["OPENAI_API_KEY"] = "sk-app-123"
+    os.environ["CLAUDE_API_KEY"] = "sk-app-123"
 
 
 def _reset_settings_cache() -> None:
@@ -22,7 +22,7 @@ def _get_openapi_payload(app_client) -> dict:
 
 
 def test_create_app_attaches_settings(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("CLAUDE_API_KEY", raising=False)
     _reset_settings_cache()
     _set_required_env()
 
@@ -30,11 +30,11 @@ def test_create_app_attaches_settings(monkeypatch) -> None:
 
     assert isinstance(app, FastAPI)
     assert isinstance(app.state.settings, Settings)
-    assert app.state.settings.openai_api_key == "sk-app-123"
+    assert app.state.settings.claude_api_key == "sk-app-123"
 
 
 def test_create_app_sets_version_on_state(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("CLAUDE_API_KEY", raising=False)
     _reset_settings_cache()
     _set_required_env()
 

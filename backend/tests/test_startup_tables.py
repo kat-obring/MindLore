@@ -10,7 +10,7 @@ from sqlmodel import SQLModel
 @pytest.mark.asyncio
 async def test_startup_creates_tables(tmp_path, monkeypatch):
     db_path = tmp_path / "startup.db"
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-startup")
+    monkeypatch.setenv("CLAUDE_API_KEY", "sk-startup")
     monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{db_path}")
     get_settings.cache_clear()
 
