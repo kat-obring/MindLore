@@ -1,15 +1,16 @@
 # MindLore
 
-AI assistant for social content ideation and polishing. Tech stack: FastAPI (backend), React + Vite + TypeScript + Tailwind (frontend), OpenAI ChatGPT 5.2 for generation.
+AI assistant for social content ideation and polishing. Tech stack: FastAPI (backend), React + Vite + TypeScript + Tailwind (frontend), Claude for generation.
 
 ## Prerequisites
 
-- Python 3.11+
+- Python 3.12+
 - Node.js 20+ and npm
+- Docker (optional, for containerized development)
 
 ## Setup
 
-1) Copy `env.example` to `.env` and fill in secrets (e.g., `OPENAI_API_KEY`).
+1) Copy `env.example` to `.env` and fill in secrets (e.g., `CLAUDE_API_KEY`).
 
 2) Install dependencies:
 
@@ -59,9 +60,30 @@ cd frontend
 npm run dev
 ```
 
-- Backend app (requires `OPENAI_API_KEY` set):
+- Backend app (requires `CLAUDE_API_KEY` set):
   - From `backend/`: `uvicorn app.main:create_app --factory --reload --host 0.0.0.0 --port 8000`
   - Or use Make target: `make backend-serve` (respects `PORT` env/var)
+
+## Run with Docker
+
+Start both frontend and backend with a single command:
+
+```bash
+docker compose up
+```
+
+This starts:
+- Frontend at http://localhost:5173 (with hot reload)
+- Backend at http://localhost:8000 (with hot reload)
+
+Other useful commands:
+
+```bash
+docker compose up -d        # Run in background
+docker compose down         # Stop all containers
+docker compose logs -f      # Follow logs
+docker compose up --build   # Rebuild after Dockerfile changes
+```
 
 ## API Docs (Swagger)
 
